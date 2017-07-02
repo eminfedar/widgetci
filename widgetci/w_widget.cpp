@@ -11,11 +11,14 @@
 QMap<QString, QFrame*> elementList;
 uint16_t maxWidth = 10, maxHeight = 10;
 
+WWidget* WWidget::s_This;
+WWidget* WWidget::This(){ return s_This; }
 
 WWidget::WWidget(QWidget *parent) :
     QWidget(parent, Qt::Dialog)
 {
 
+    s_This = this;
     Engine = new QScriptEngine(this);
     windowSettings();
 
@@ -33,7 +36,7 @@ QScriptValue WWidget::createLabel(QScriptContext *ctx, QScriptEngine *eng){
     uint16_t x = ctx->argument(1).toNumber();
     uint16_t y = ctx->argument(2).toNumber();
 
-    QLabel* element = new QLabel(this);
+    QLabel* element = new QLabel(This());
     element->move(x,y);
     element->setText(text);
     element->show();
@@ -48,7 +51,7 @@ QScriptValue WWidget::createButton(QScriptContext *ctx, QScriptEngine *eng){
     uint16_t x = ctx->argument(1).toNumber();
     uint16_t y = ctx->argument(2).toNumber();
 
-    QPushButton* element = new QPushButton(this);
+    QPushButton* element = new QPushButton(This());
     element->move(x,y);
     element->setText(text);
     element->show();
@@ -58,21 +61,18 @@ QScriptValue WWidget::createButton(QScriptContext *ctx, QScriptEngine *eng){
 }
 
 // QTimer
-void WWidget::onTimer(){
-    qDebug() << "Tick!";
-}
 
 QScriptValue WWidget::setInterval(QScriptContext *ctx, QScriptEngine *eng){
     QScriptValue func = ctx->argument(0);
     uint32_t milliseconds = ctx->argument(1).toNumber();
     milliseconds = milliseconds>=5?milliseconds:5;
 
-    //func.call();
-    onTimerFunc = func;
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    QTimer *timer = new QTimer();
+    connect(timer, &QTimer::timeout, [&]{
+        qDebug() << "is timer working?";
+        func.call(); // this is not working in here but works in outside.
+    });
     timer->start(milliseconds);
-
 
     return eng->toScriptValue(true);
 }

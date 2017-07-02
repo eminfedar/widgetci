@@ -19,7 +19,8 @@ public:
     ~WWidget();
 
     QScriptEngine* Engine;
-
+    static WWidget* This();
+    static WWidget* s_This;
 private:
 
     Ui::WWidget *ui;
@@ -34,7 +35,7 @@ private:
     qint16 dragXsync = 0, dragYsync = 0;
 
 
-    // Create Elements
+    // Create WidgetElements
     static QScriptValue createLabel(QScriptContext *ctx, QScriptEngine *eng);
     static QScriptValue createButton(QScriptContext *ctx, QScriptEngine *eng);
 
@@ -44,11 +45,6 @@ private:
     // Scripts
     void parseJSFile(QString filename);
     QString readJSFile(QString filename);
-
-    QScriptValue onTimerFunc;
-
-private slots:
-    void onTimer();
 };
 
 #endif // WIDGETSCREEN_H
