@@ -6,6 +6,8 @@
 #include <QScriptEngine>
 #include <QScriptContext>
 
+class QTimer;
+
 namespace Ui {
 class WWidget;
 }
@@ -41,10 +43,13 @@ private:
 
     // Useful Tools
     static QScriptValue setInterval(QScriptContext *ctx, QScriptEngine *eng);
+    static QScriptValue console_log(QScriptContext *ctx, QScriptEngine *eng);
 
     // Scripts
     void parseJSFile(QString filename);
     QString readJSFile(QString filename);
+
+    static QTimer *currentTimer;
 };
 
 #endif // WIDGETSCREEN_H
