@@ -2,13 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "w_widget.h"
+#include "wwidget.h"
 #include <QSystemTrayIcon>
 #include <QMenu>
 
 
 namespace Ui {
-class mainWindow;
+    class mainWindow;
+    class WWidget;
 }
 
 class mainWindow : public QMainWindow
@@ -19,16 +20,23 @@ public:
     explicit mainWindow(QWidget *parent = 0);
     ~mainWindow();
 
+private:
+    Ui::mainWindow *ui;
+
+    // Tray Menu
+    void addTrayIcon();
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayMenu;
+    QIcon *appIcon;
+
+    // App Config
+    void appConfig();
+    QString configDir, widgetsDir;
+
+
 private slots:
     void on_pushButton_clicked();
 
-private:
-    Ui::mainWindow *ui;
-    QVector<WWidget*> widgetsList;
-
-    QSystemTrayIcon *trayIcon;
-    QMenu *trayMenu;
-    //QIcon *trayIcon;
 };
 
 #endif // MAINWINDOW_H

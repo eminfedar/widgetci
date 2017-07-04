@@ -2,7 +2,8 @@
     <qresource prefix="/img">
         <file>icon.png</file>
     </qresource>
-    <qresource prefix="/script">
-        <file>test.js</file>
+    <qresource prefix="/widgets/example">
+        <file>example.qml</file>
+        <file>test.png</file>
     </qresource>
 </RCC>
