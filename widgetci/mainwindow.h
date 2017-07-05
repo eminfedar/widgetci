@@ -9,6 +9,7 @@
 #include <QTreeWidgetItem>
 #include <QMap>
 #include <QIcon>
+#include <QColor>
 
 
 namespace Ui {
@@ -33,10 +34,14 @@ private:
 
     // Listing the widgets:
     void loadWidgets();
+    void toggleWidget(QTreeWidgetItem *item);
     QTreeWidget *obj_widgetList;
     QMap<QString, QTreeWidgetItem *> map_widgetItemList;
+    QMap<QString, WWidget *> map_widgetList;
     QIcon ico_toggleoff, ico_toggleon;
     QMenu *menu_wlRightClick; // menu_widgetlistRightClick
+    QColor colorOn;
+    QColor colorOff;
 
     // Tray Menu
     void addTrayIcon();
@@ -50,6 +55,8 @@ private:
     void appConfig();
     QString configDir, widgetsDir;
 
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // MAINWINDOW_H
