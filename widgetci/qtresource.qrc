@@ -1,9 +1,12 @@
 <RCC>
-    <qresource prefix="/img">
-        <file>icon.png</file>
+    <qresource prefix="/">
+        <file>img/showfolder.png</file>
+        <file>img/toggleoff.png</file>
+        <file>img/toggleon.png</file>
+        <file>img/icon.png</file>
     </qresource>
     <qresource prefix="/widgets/example">
         <file>example.qml</file>
-        <file>test.png</file>
+        <file>img/test.png</file>
     </qresource>
 </RCC>

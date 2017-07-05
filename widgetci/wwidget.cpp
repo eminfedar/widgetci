@@ -24,10 +24,8 @@ void WWidget::mousePressEvent(QMouseEvent *event){
 void WWidget::mouseMoveEvent(QMouseEvent *event){
     if(isDragging)
         this->setPosition(event->globalX() - dragX, event->globalY() - dragY);
-    event->accept();
 }
 void WWidget::mouseReleaseEvent(QMouseEvent *event){
     isDragging = false;
-    event->accept();
 }
 

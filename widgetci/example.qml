@@ -72,7 +72,7 @@ Item {
                 WWidget::mouseMoveEvent,
                 WWidget::mouseReleaseEvent are preventing.*/
     // Clickable text example.
-    Text {
+    /*Text {
         y: 130
         width: 50
         height: 20
