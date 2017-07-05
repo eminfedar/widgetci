@@ -4,22 +4,21 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui qml quick
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets script
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Widgetci
 TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    w_widget.cpp
+    wwidget.cpp
 
 HEADERS  += mainwindow.h \
-    w_widget.h
+    wwidget.h
 
-FORMS    += mainwindow.ui \
-    w_widget.ui
+FORMS    += mainwindow.ui
 
 QMAKE_CXXFLAGS += -std=c++11
 

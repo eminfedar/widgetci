@@ -11,15 +11,19 @@
 QMap<QString, QFrame*> elementList;
 uint16_t maxWidth = 10, maxHeight = 10;
 
+WWidget* WWidget::s_This;
+WWidget* WWidget::This(){ return s_This; }
+QTimer* WWidget::currentTimer = Q_NULLPTR;
 
 WWidget::WWidget(QWidget *parent) :
     QWidget(parent, Qt::Dialog)
 {
 
+    s_This = this;
     Engine = new QScriptEngine(this);
     windowSettings();
 
-    parseJSFile("testscript.js");
+    parseJSFile(":/script/test.js");
 }
 
 
@@ -33,7 +37,7 @@ QScriptValue WWidget::createLabel(QScriptContext *ctx, QScriptEngine *eng){
     uint16_t x = ctx->argument(1).toNumber();
     uint16_t y = ctx->argument(2).toNumber();
 
-    QLabel* element = new QLabel(this);
+    QLabel* element = new QLabel(This());
     element->move(x,y);
     element->setText(text);
     element->show();
@@ -48,7 +52,7 @@ QScriptValue WWidget::createButton(QScriptContext *ctx, QScriptEngine *eng){
     uint16_t x = ctx->argument(1).toNumber();
     uint16_t y = ctx->argument(2).toNumber();
 
-    QPushButton* element = new QPushButton(this);
+    QPushButton* element = new QPushButton(This());
     element->move(x,y);
     element->setText(text);
     element->show();
@@ -58,21 +62,36 @@ QScriptValue WWidget::createButton(QScriptContext *ctx, QScriptEngine *eng){
 }
 
 // QTimer
-void WWidget::onTimer(){
-    qDebug() << "Tick!";
+
+QScriptValue WWidget::console_log(QScriptContext *ctx, QScriptEngine *eng) {
+    qDebug() << ctx->argument(0).toString();
+    return QScriptValue();
 }
 
 QScriptValue WWidget::setInterval(QScriptContext *ctx, QScriptEngine *eng){
-    QScriptValue func = ctx->argument(0);
+    const QScriptValue func = ctx->argument(0);
     uint32_t milliseconds = ctx->argument(1).toNumber();
     milliseconds = milliseconds>=5?milliseconds:5;
 
-    //func.call();
-    onTimerFunc = func;
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+   //  qDebug() << "Func Context: " << func.toString() << "IS FUNCTION?: " << func.isFunction();
+
+    QTimer *timer = new QTimer();
+    connect(timer, &QTimer::timeout, [func, eng]{
+        QScriptValue copy(func);
+        copy.call();
+        if (eng->hasUncaughtException()) {
+            qDebug() << "Exception occured: " << eng->uncaughtException().toString();
+        }
+
+    });
     timer->start(milliseconds);
 
+    if (currentTimer != Q_NULLPTR) {
+        currentTimer->stop();
+        currentTimer->deleteLater();
+    }
+
+    currentTimer = timer;
 
     return eng->toScriptValue(true);
 }
@@ -85,19 +104,35 @@ QScriptValue WWidget::setInterval(QScriptContext *ctx, QScriptEngine *eng){
 void WWidget::parseJSFile(QString filename){
     QString script = readJSFile(filename);
     if(script != ""){
+        qDebug() << "Script parsed successfully " << script;
+
         //engine.globalObject().setProperty("WWidget", );
 
         // Add Creating Functions
         Engine->globalObject().setProperty("createLabel", Engine->newFunction(createLabel)); // createLabel
         Engine->globalObject().setProperty("createButton", Engine->newFunction(createButton)); // createButton
         Engine->globalObject().setProperty("setInterval", Engine->newFunction(setInterval)); // setInterval
+        Engine->globalObject().setProperty("console_log", Engine->newFunction(console_log)); // setInterval
 
+        QScriptProgram program(script + "; main(); ");
+        QScriptSyntaxCheckResult result = QScriptEngine::checkSyntax(script);
+        if (result.state() == QScriptSyntaxCheckResult::Error){
+            qDebug() << "Syntax error in script.";
+            return;
+        }
 
         // Run the script
-        Engine->evaluate(script + " main(); ");
+        Engine->evaluate(program);
+        if (Engine->hasUncaughtException()) {
+            qDebug() << "System got exception: " << Engine->uncaughtExceptionBacktrace();
+        }
+
+
         //engine.abortEvaluation();
 
         this->setFixedSize(QSize(maxWidth, maxHeight));
+    } else {
+        qDebug() << "Script is empty.";
     }
 }
 
@@ -166,4 +201,7 @@ void WWidget::mouseReleaseEvent(QMouseEvent *event){
 WWidget::~WWidget()
 {
     delete ui;
+    if (currentTimer != Q_NULLPTR)
+        currentTimer->deleteLater();
+    currentTimer = Q_NULLPTR;
 }

@@ -6,6 +6,8 @@
 #include <QScriptEngine>
 #include <QScriptContext>
 
+class QTimer;
+
 namespace Ui {
 class WWidget;
 }
@@ -19,7 +21,8 @@ public:
     ~WWidget();
 
     QScriptEngine* Engine;
-
+    static WWidget* This();
+    static WWidget* s_This;
 private:
 
     Ui::WWidget *ui;
@@ -34,21 +37,19 @@ private:
     qint16 dragXsync = 0, dragYsync = 0;
 
 
-    // Create Elements
+    // Create WidgetElements
     static QScriptValue createLabel(QScriptContext *ctx, QScriptEngine *eng);
     static QScriptValue createButton(QScriptContext *ctx, QScriptEngine *eng);
 
     // Useful Tools
     static QScriptValue setInterval(QScriptContext *ctx, QScriptEngine *eng);
+    static QScriptValue console_log(QScriptContext *ctx, QScriptEngine *eng);
 
     // Scripts
     void parseJSFile(QString filename);
     QString readJSFile(QString filename);
 
-    QScriptValue onTimerFunc;
-
-private slots:
-    void onTimer();
+    static QTimer *currentTimer;
 };
 
 #endif // WIDGETSCREEN_H
