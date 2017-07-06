@@ -36,7 +36,6 @@ private:
     void loadWidgets();
     void toggleWidget(QTreeWidgetItem *item);
     QTreeWidget *obj_widgetList;
-    QMap<QString, QTreeWidgetItem *> map_widgetItemList;
     QMap<QString, WWidget *> map_widgetList;
     QIcon ico_toggleoff, ico_toggleon;
     QMenu *menu_wlRightClick; // menu_widgetlistRightClick

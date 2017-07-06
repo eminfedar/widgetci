@@ -32,7 +32,7 @@ void mainWindow::closeEvent(QCloseEvent *event){
 
 void mainWindow::toggleWidget(QTreeWidgetItem *item){
     if(!map_widgetList.contains(item->text(0))){
-        WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + item->text(0) + "/main.qml"));
+        WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + item->text(0) + "/main.qml"), widgetsDir + "/" + item->text(0));
         map_widgetList.insert(item->text(0), wid);
 
         item->setIcon(0, ico_toggleon);
@@ -63,8 +63,6 @@ void mainWindow::loadWidgets(){
         QTreeWidgetItem* item = new QTreeWidgetItem(obj_widgetList);
         item->setText(0, folder);
         item->setIcon(0, ico_toggleoff);
-
-        map_widgetItemList.insert(folder, item);
     }
 
 
@@ -85,12 +83,20 @@ void mainWindow::loadWidgets(){
     connect(act_wlrc_Enable, &QAction::triggered, [=]{
         qDebug() << "Enable/Disable the Widget, Label will change (Show/Hide)";
 
-        QTreeWidgetItem *item = obj_widgetList->currentItem();
-        toggleWidget(item);
+        toggleWidget(obj_widgetList->currentItem());
     });
     QAction* act_wlrc_Edit = new QAction("Edit", this);
     connect(act_wlrc_Edit, &QAction::triggered, [=]{
         qDebug() << "Edit the widget with default editor";
+
+        QDesktopServices::openUrl(QUrl::fromLocalFile(widgetsDir + "/" + obj_widgetList->currentItem()->text(0) + "/main.qml"));
+    });
+    QAction* act_wlrc_Reload = new QAction("Reload", this);
+    connect(act_wlrc_Reload, &QAction::triggered, [=]{
+        qDebug() << "Reload  the widget";
+
+        if(map_widgetList.contains(obj_widgetList->currentItem()->text(0)))
+            map_widgetList.value(obj_widgetList->currentItem()->text(0))->reload();
     });
     QAction* act_wlrc_Delete = new QAction("Remove", this);
     connect(act_wlrc_Delete, &QAction::triggered, [=]{
@@ -106,19 +112,22 @@ void mainWindow::loadWidgets(){
     // Add Actions to the Menu
     menu_wlRightClick->addAction(act_wlrc_Enable);
     menu_wlRightClick->addAction(act_wlrc_Edit);
+    menu_wlRightClick->addAction(act_wlrc_Reload);
     menu_wlRightClick->addAction(act_seperator);
     menu_wlRightClick->addAction(act_wlrc_Delete);
     menu_wlRightClick->addAction(act_wlrc_DeleteDisk);
     connect(obj_widgetList, &QTreeWidget::customContextMenuRequested, [=](const QPoint & pos) {
         QPoint pt(pos);
-        pt.setX(pt.x()-9);
-        pt.setY(pt.y()+9);
+        pt.setX(pt.x()+4);
+        pt.setY(pt.y()+28);
 
         QTreeWidgetItem *item = obj_widgetList->currentItem();
         if(!map_widgetList.contains(item->text(0))){
             act_wlrc_Enable->setText("Show");
+            act_wlrc_Reload->setEnabled(false);
         }else if(map_widgetList.contains(item->text(0))){
             act_wlrc_Enable->setText("Hide");
+            act_wlrc_Reload->setEnabled(true);
         }
 
         menu_wlRightClick->exec( obj_widgetList->mapToGlobal(pt) );
@@ -145,9 +154,14 @@ void mainWindow::addActionsToTray(){
     connect(openManager, &QAction::triggered, [=]{
         qDebug() << "show Manager";
         this->setVisible(true);
+        this->raise();
+        QApplication::setActiveWindow(this);
     });
     connect(reloadAll, &QAction::triggered, [=]{
-        qDebug() << "reloadAll";
+        for(auto e : map_widgetList.keys())
+        {
+          map_widgetList.value(e)->reload();
+        }
     });
     connect(quit, &QAction::triggered, [=]{
         qDebug() << "Quit";

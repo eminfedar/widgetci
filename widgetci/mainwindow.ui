@@ -39,9 +39,9 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QLabel" name="label">
           <property name="text">
-           <string>PushButton</string>
+           <string>v0.1.0</string>
           </property>
          </widget>
         </item>

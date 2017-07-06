@@ -8,11 +8,14 @@ class WWidget : public QQuickView
     Q_OBJECT
 
 public:
-    WWidget(const QUrl fileurl);
+    WWidget(const QUrl fileurl, const QString filepath);
 
+    void reload();
+    QUrl fileurl;
+    QString filepath;
 private:
     bool isDragging = false;
-    u_int16_t dragX = 0, dragY = 0;
+    quint16 dragX = 0, dragY = 0;
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;

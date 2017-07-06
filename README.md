@@ -1,3 +1,4 @@
+![Image](https://raw.githubusercontent.com/eminfedar/widgetci/master/firststable.qif)
 # Widgetci
 a Cross-Platform Widget Management App (Win/Linux/Mac) - Uses QT5.9's "QML + Javascript Engine" for creating widgets.
 
