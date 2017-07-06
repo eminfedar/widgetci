@@ -1,8 +1,9 @@
-![Image](https://raw.githubusercontent.com/eminfedar/widgetci/master/firststable.qif)
 # Widgetci
-a Cross-Platform Widget Management App (Win/Linux/Mac) - Uses QT5.9's "QML + Javascript Engine" for creating widgets.
+a Widget Management App can run on Win/Linux/Mac - (Uses **QT5.9**'s "**QML** + **Javascript** Engine" for **creating widgets.**)
 
-Simple widget file (.qml):
+![Image](https://github.com/eminfedar/widgetci/raw/master/firststable.gif)
+
+### Simple widget file (.qml):
 ```
 import QtQuick 2.5
 
@@ -20,3 +21,4 @@ Item {
     }
 }
 ```
+
