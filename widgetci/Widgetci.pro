@@ -13,10 +13,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    wwidget.cpp
+    wwidget.cpp \
+    runguard.cpp
 
 HEADERS  += mainwindow.h \
-    wwidget.h
+    wwidget.h \
+    runguard.h
 
 FORMS    += mainwindow.ui
 

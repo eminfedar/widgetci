@@ -18,12 +18,7 @@
     <normaloff>:/img/icon.png</normaloff>:/img/icon.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true"> QMenu::item:selected{
- background-color: rgb(0, 150, 0);
- };
-
-background: #292929;
-color:#FFFFFF;</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -31,6 +26,9 @@ color:#FFFFFF;</string>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QTreeWidget" name="obj_widgetList">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
         <column>
          <property name="text">
           <string>Widgets</string>
@@ -41,9 +39,9 @@ color:#FFFFFF;</string>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QLabel" name="label">
           <property name="text">
-           <string>PushButton</string>
+           <string>v0.1.0</string>
           </property>
          </widget>
         </item>
