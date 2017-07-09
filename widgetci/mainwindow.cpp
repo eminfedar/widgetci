@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QDesktopServices>
 #include <QCloseEvent>
+#include <QSystemTrayIcon>
 
 mainWindow::mainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -33,7 +34,15 @@ void mainWindow::closeEvent(QCloseEvent *event){
 void mainWindow::toggleWidget(QTreeWidgetItem *item){
     if(!map_widgetList.contains(item->text(0))){
         WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + item->text(0) + "/main.qml"), widgetsDir + "/" + item->text(0));
+        wid->name = item->text(0);
         map_widgetList.insert(item->text(0), wid);
+        connect(wid, &QQuickWindow::closing, [=](QQuickCloseEvent *close){
+            delete map_widgetList[item->text(0)];
+            map_widgetList.remove(item->text(0));
+
+            item->setIcon(0, ico_toggleoff);
+            item->setTextColor(0, colorOff);
+        });
 
         item->setIcon(0, ico_toggleon);
         item->setTextColor(0, colorOn);
@@ -52,7 +61,11 @@ void mainWindow::loadWidgets(){
     ico_toggleoff = QIcon(":/img/toggleoff.png");
     ico_toggleon = QIcon(":/img/toggleon.png");
     colorOn = QColor(0, 230, 0, 255);
+#ifndef Q_OS_WIN
     colorOff = QColor(255, 255, 255, 255);
+#else
+    colorOff = QColor(0, 0, 0, 255);
+#endif
 
     QDir dir(widgetsDir);
     QStringList folderList = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -189,6 +202,14 @@ void mainWindow::addTrayIcon(){
     trayIcon->setContextMenu(trayMenu);
     trayIcon->setIcon(*appIcon);
     trayIcon->show();
+    connect(trayIcon, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason){
+        if(reason == QSystemTrayIcon::DoubleClick){
+            qDebug() << "DoubleClick ShowManager";
+            this->setVisible(true);
+            this->raise();
+            QApplication::setActiveWindow(this);
+        }
+    });
 
 }
 

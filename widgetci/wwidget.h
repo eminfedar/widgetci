@@ -2,6 +2,7 @@
 #define WWIDGET_H
 #include <QQuickView>
 #include <QObject>
+#include <QMenu>
 
 class WWidget : public QQuickView
 {
@@ -13,9 +14,13 @@ public:
     void reload();
     QUrl fileurl;
     QString filepath;
+    QString name;
 private:
     bool isDragging = false;
     quint16 dragX = 0, dragY = 0;
+
+    QMenu *menu_rightClick;
+    void addRightClickMenu();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
