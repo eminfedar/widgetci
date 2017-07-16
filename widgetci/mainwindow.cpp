@@ -34,10 +34,10 @@ void mainWindow::closeEvent(QCloseEvent *event){
 void mainWindow::toggleWidget(QTreeWidgetItem *item){
     if(!map_widgetList.contains(item->text(0))){
         WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + item->text(0) + "/main.qml"), widgetsDir + "/" + item->text(0));
-        wid->name = item->text(0);
         map_widgetList.insert(item->text(0), wid);
-        connect(wid, &QQuickWindow::closing, [=](QQuickCloseEvent *close){
-            delete map_widgetList[item->text(0)];
+
+        // Delete the widget from list when destroyed
+        connect(wid, &QQuickWindow::destroyed, [=]{
             map_widgetList.remove(item->text(0));
 
             item->setIcon(0, ico_toggleoff);
@@ -56,7 +56,7 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item){
 }
 
 void mainWindow::loadWidgets(){
-    // Initialize variables and load widgets
+    // Initialize the variables and load widgets from disk
     obj_widgetList = ui->obj_widgetList;
     ico_toggleoff = QIcon(":/img/toggleoff.png");
     ico_toggleon = QIcon(":/img/toggleon.png");

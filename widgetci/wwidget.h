@@ -14,7 +14,6 @@ public:
     void reload();
     QUrl fileurl;
     QString filepath;
-    QString name;
 private:
     bool isDragging = false;
     quint16 dragX = 0, dragY = 0;

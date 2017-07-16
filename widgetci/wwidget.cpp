@@ -28,8 +28,9 @@ void WWidget::addRightClickMenu(){
     // Menu Actions
     QAction* act_Hide = new QAction("Hide",this);
     connect(act_Hide, &QAction::triggered, [=]{
-        // This->close calls closing signal in main.
         this->close();
+        this->destroy();
+        delete this;
     });
 
     QAction* act_alwaysOnTop = new QAction("Always on top",this);
