@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 
 
     QApplication a(argc, argv);
+    QApplication::setQuitOnLastWindowClosed(false);
 
     // STYLING.
     #ifdef Q_OS_LINUX || Q_OS_UNIX

@@ -50,7 +50,6 @@ void WWidget::reload(){
     this->setSource(QUrl());
     this->engine()->clearComponentCache();
     this->setSource(fileurl);
-    qDebug() << "reloaded";
 }
 
 // Drag&Drop the widget: (This prevents qml's onClick events.)
@@ -73,6 +72,7 @@ void WWidget::mouseMoveEvent(QMouseEvent *event){
         this->setPosition(event->globalX() - dragX, event->globalY() - dragY);
 }
 void WWidget::mouseReleaseEvent(QMouseEvent *event){
+    Q_UNUSED(event)
     isDragging = false;
 }
 

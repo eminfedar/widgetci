@@ -177,8 +177,6 @@ void mainWindow::addActionsToTray(){
         }
     });
     connect(quit, &QAction::triggered, [=]{
-        qDebug() << "Quit";
-
         // Close the widgets too.
         for(auto e : map_widgetList.keys()){
           delete map_widgetList.value(e);
