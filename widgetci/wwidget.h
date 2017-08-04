@@ -19,6 +19,7 @@ private:
     quint16 dragX = 0, dragY = 0;
 
     QMenu *menu_rightClick;
+    QAction *act_seperator;
     void addRightClickMenu();
 
 protected:
