@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     // Prevent multiple instances
-    RunGuard guard( "some_random_key" );
+    RunGuard guard( "widgetci_prevent_double_run" );
         if ( !guard.tryToRun() )
             return 0;
 

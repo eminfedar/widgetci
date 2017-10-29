@@ -81,7 +81,7 @@ void mainWindow::loadWidgets(){
 
 
     // Enable|Disable widgets by double clicking on them
-    connect(obj_widgetList, &QTreeWidget::itemDoubleClicked, [=](QTreeWidgetItem* item) {
+    connect(obj_widgetList, &QTreeWidget::itemActivated, [=](QTreeWidgetItem* item) {
         toggleWidget(item);
     });
 
