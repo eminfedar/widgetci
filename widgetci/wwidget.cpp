@@ -77,6 +77,11 @@ void WWidget::addRightClickMenu(){
         this->destroy();
         delete this;
     });
+    // -- Reload
+    QAction* act_Reload = new QAction("Reload",this);
+    connect(act_Reload, &QAction::triggered, [=]{
+        this->reload();
+    });
     // -- {SEPERATOR_AT_HERE}
     // -- Always on Most Top
     QAction* act_alwaysOnMostTop = new QAction("Always on Most top",this);
@@ -163,6 +168,7 @@ void WWidget::addRightClickMenu(){
 
     // Adding Sub-Menus & Actions
     menu_rightClick->addAction(act_Hide);
+    menu_rightClick->addAction(act_Reload);
     menu_rightClick->addAction(act_seperator);
     QMenu* submenu_zindex = menu_rightClick->addMenu("Z-Position");
         submenu_zindex->addAction(act_alwaysOnMostTop);
