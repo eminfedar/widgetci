@@ -24,6 +24,7 @@ private:
     QMenu *menu_rightClick;
     QAction *act_seperator;
     void addRightClickMenu();
+    void addHoverButtons();
 
     // Window Flags
     Qt::WindowFlags alwaysMostTopFlags = Qt::WindowStaysOnTopHint | Qt::BypassWindowManagerHint | Qt::BypassGraphicsProxyWidget; // Always on Most top

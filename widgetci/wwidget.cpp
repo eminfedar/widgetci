@@ -2,6 +2,8 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QDir>
+#include <QPushButton>
+#include <QMessageBox>
 
 
 WWidget::WWidget(const QUrl fileurl, const QString filepath) : QQuickView(fileurl)
@@ -20,6 +22,7 @@ WWidget::WWidget(const QUrl fileurl, const QString filepath) : QQuickView(fileur
 
     // Widget's RightClick Menu
     addRightClickMenu();
+    addHoverButtons();
 }
 
 void WWidget::reload(){
@@ -59,6 +62,12 @@ void WWidget::mouseReleaseEvent(QMouseEvent *event){
 }
 
 
+void WWidget::addHoverButtons(){
+    QQuickItem* moveImg = new QQuickItem();
+    Q_UNUSED(moveImg);
+
+}
+
 void WWidget::addRightClickMenu(){
     // Menu
     menu_rightClick = new QMenu();
@@ -94,12 +103,10 @@ void WWidget::addRightClickMenu(){
                 this->create();
                 this->show();
                 this->setFlags(this->normalFlags | this->alwaysMostTopFlags);
-                qDebug() << "Bi resetlendi.";
             }else{
                 this->hide();
                 this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysMostTopFlags);
                 this->show();
-                qDebug() << this->flags();
                 this->requestActivate();
             }
 
