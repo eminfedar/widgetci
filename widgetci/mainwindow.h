@@ -29,10 +29,13 @@ public:
 private slots:
     void on_obj_showFolderBtn_clicked();
 
+    void on_obj_refreshWidgetListBtn_clicked();
+
 private:
     Ui::mainWindow *ui;
 
     // Listing the widgets:
+    void updateWidgetList(QTreeWidget* widgetList_obj);
     void loadWidgets();
     void toggleWidget(QTreeWidgetItem *item);
     QTreeWidget *obj_widgetList;
