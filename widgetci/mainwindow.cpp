@@ -33,8 +33,9 @@ void mainWindow::closeEvent(QCloseEvent *event){
 }
 
 void mainWindow::toggleWidget(QTreeWidgetItem *item){
-    if(!map_widgetList.contains(item->text(0))){
-        WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + item->text(0) + "/main.qml"), widgetsDir + "/" + item->text(0));
+    QString wid_filename = item->text(0);
+    if(!map_widgetList.contains(wid_filename)){
+        WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + wid_filename + "/main.qml"), wid_filename);
 
         // Check for errors. (File not found etc...)
         if( wid->status() == QQuickView::Error ){
@@ -53,21 +54,23 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item){
             return;
         }
 
-        map_widgetList.insert(item->text(0), wid);
+        map_widgetList.insert(wid->filename, wid);
 
         // Delete the widget from list when destroyed
-        connect(wid, &QQuickWindow::destroyed, [=]{
-            map_widgetList.remove(item->text(0));
+        connect(wid, &QQuickWindow::destroyed, [=, &item]{
+            if(map_widgetList.contains(wid->filename)){
+                map_widgetList.remove(wid->filename);
 
-            item->setIcon(0, ico_toggleoff);
-            item->setTextColor(0, colorOff);
+                item->setIcon(0, ico_toggleoff);
+                item->setTextColor(0, colorOff);
+            }
+
         });
 
         item->setIcon(0, ico_toggleon);
         item->setTextColor(0, colorOn);
-    }else if(map_widgetList.contains(item->text(0))){
-        delete map_widgetList[item->text(0)];
-        map_widgetList.remove(item->text(0));
+    }else if(map_widgetList.contains(wid_filename)){
+        delete map_widgetList[wid_filename];
 
         item->setIcon(0, ico_toggleoff);
         item->setTextColor(0, colorOff);
@@ -86,9 +89,6 @@ void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
         QTreeWidgetItem* item = new QTreeWidgetItem(widgetList_obj);
         item->setText(0, folder);
         item->setIcon(0, ico_toggleoff);
-
-        if(map_widgetList.contains(folder))
-            map_widgetList.remove(folder);
     }
 
 
@@ -174,10 +174,11 @@ void mainWindow::loadWidgets(){
         pt.setY(pt.y()+22);
 
         QTreeWidgetItem *item = obj_widgetList->currentItem();
-        if(!map_widgetList.contains(item->text(0))){
+        QString wid_filename = item->text(0);
+        if(!map_widgetList.contains(wid_filename)){
             act_wlrc_Enable->setText("Show");
             act_wlrc_Reload->setEnabled(false);
-        }else if(map_widgetList.contains(item->text(0))){
+        }else if(map_widgetList.contains(wid_filename)){
             act_wlrc_Enable->setText("Hide");
             act_wlrc_Reload->setEnabled(true);
         }
