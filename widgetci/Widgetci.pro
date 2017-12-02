@@ -5,7 +5,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui widgets qml quick
+QT += widgets quick
 
 TARGET = Widgetci
 TEMPLATE = app
