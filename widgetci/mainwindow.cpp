@@ -9,6 +9,8 @@
 #include <QAction>
 #include <QDesktopServices>
 #include <QCloseEvent>
+#include <QSystemTrayIcon>
+#include <QMessageBox>
 
 mainWindow::mainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,28 +33,52 @@ void mainWindow::closeEvent(QCloseEvent *event){
 }
 
 void mainWindow::toggleWidget(QTreeWidgetItem *item){
-    if(!map_widgetList.contains(item->text(0))){
-        WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + item->text(0) + "/main.qml"), widgetsDir + "/" + item->text(0));
-        map_widgetList.insert(item->text(0), wid);
+    QString wid_filename = item->text(0);
+    if(!map_widgetList.contains(wid_filename)){
+        WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + wid_filename + "/main.qml"), wid_filename);
+
+        // Check for errors. (File not found etc...)
+        if( wid->status() == QQuickView::Error ){
+
+            QString errorString = "";
+            for (int i = 0; i < wid->errors().length(); ++i) {
+                errorString.append(wid->errors().at(i).toString());
+            }
+            errorString.append("\n\nPlease try to fix the error and refresh the list.");
+
+            item->setBackgroundColor(0, QColor(160,0,0,255));
+            item->setTextColor(0, QColor(180, 180, 180, 255));
+            item->setSelected(false);
+
+            QMessageBox::warning(this, "An error occured", errorString, QMessageBox::Ok);
+            return;
+        }
+
+        map_widgetList.insert(wid->filename, wid);
+
+        // Delete the widget from list when destroyed
+        connect(wid, &QQuickWindow::destroyed, [=, &item]{
+            if(map_widgetList.contains(wid->filename)){
+                map_widgetList.remove(wid->filename);
+
+                item->setIcon(0, ico_toggleoff);
+                item->setTextColor(0, colorOff);
+            }
+
+        });
 
         item->setIcon(0, ico_toggleon);
         item->setTextColor(0, colorOn);
-    }else if(map_widgetList.contains(item->text(0))){
-        delete map_widgetList[item->text(0)];
-        map_widgetList.remove(item->text(0));
+    }else if(map_widgetList.contains(wid_filename)){
+        delete map_widgetList[wid_filename];
 
         item->setIcon(0, ico_toggleoff);
         item->setTextColor(0, colorOff);
     }
 }
 
-void mainWindow::loadWidgets(){
-    // Initialize variables and load widgets
-    obj_widgetList = ui->obj_widgetList;
-    ico_toggleoff = QIcon(":/img/toggleoff.png");
-    ico_toggleon = QIcon(":/img/toggleon.png");
-    colorOn = QColor(0, 230, 0, 255);
-    colorOff = QColor(255, 255, 255, 255);
+void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
+    widgetList_obj->clear();
 
     QDir dir(widgetsDir);
     QStringList folderList = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -60,7 +86,7 @@ void mainWindow::loadWidgets(){
     for(int i=0; i<folderList.length(); i++){
         QString folder = folderList.at(i);
 
-        QTreeWidgetItem* item = new QTreeWidgetItem(obj_widgetList);
+        QTreeWidgetItem* item = new QTreeWidgetItem(widgetList_obj);
         item->setText(0, folder);
         item->setIcon(0, ico_toggleoff);
     }
@@ -68,15 +94,34 @@ void mainWindow::loadWidgets(){
 
 
     // Enable|Disable widgets by double clicking on them
-    connect(obj_widgetList, &QTreeWidget::itemDoubleClicked, [=](QTreeWidgetItem* item) {
+    disconnect(widgetList_obj, &QTreeWidget::itemActivated, 0, 0); // prevent multiple connections & runs
+    connect(widgetList_obj, &QTreeWidget::itemActivated, [=](QTreeWidgetItem* item) {
         toggleWidget(item);
     });
+}
+
+void mainWindow::loadWidgets(){
+    // Initialize the variables
+    ico_toggleoff = QIcon(":/img/toggleoff.png");
+    ico_toggleon = QIcon(":/img/toggleon.png");
+    colorOn = QColor(0, 230, 0, 255);
+#ifndef Q_OS_WIN
+    colorOff = QColor(255, 255, 255, 255);
+#else
+    colorOff = QColor(0, 0, 0, 255);
+#endif
+    // QTreeWidget list object from ui:
+    obj_widgetList = ui->obj_widgetList;
+
+
+    // Update & Refresh the widgets
+    updateWidgetList(obj_widgetList);
+
+
 
     // Right Click Menu
     obj_widgetList->setContextMenuPolicy(Qt::CustomContextMenu);
     menu_wlRightClick = new QMenu(this);
-
-
 
     // Right Click Menu Actions
     QAction* act_wlrc_Enable = new QAction("Show", this);
@@ -98,6 +143,12 @@ void mainWindow::loadWidgets(){
         if(map_widgetList.contains(obj_widgetList->currentItem()->text(0)))
             map_widgetList.value(obj_widgetList->currentItem()->text(0))->reload();
     });
+    QAction* act_wlrc_RefreshTheList = new QAction("Refresh the list", this);
+    connect(act_wlrc_RefreshTheList, &QAction::triggered, [=]{
+        qDebug() << "Refresh the list.";
+
+        updateWidgetList(obj_widgetList);
+    });
     QAction* act_wlrc_Delete = new QAction("Remove", this);
     connect(act_wlrc_Delete, &QAction::triggered, [=]{
         qDebug() << "Just remove from list.";
@@ -113,19 +164,21 @@ void mainWindow::loadWidgets(){
     menu_wlRightClick->addAction(act_wlrc_Enable);
     menu_wlRightClick->addAction(act_wlrc_Edit);
     menu_wlRightClick->addAction(act_wlrc_Reload);
+    menu_wlRightClick->addAction(act_wlrc_RefreshTheList);
     menu_wlRightClick->addAction(act_seperator);
     menu_wlRightClick->addAction(act_wlrc_Delete);
     menu_wlRightClick->addAction(act_wlrc_DeleteDisk);
     connect(obj_widgetList, &QTreeWidget::customContextMenuRequested, [=](const QPoint & pos) {
         QPoint pt(pos);
-        pt.setX(pt.x()+4);
-        pt.setY(pt.y()+28);
+        pt.setX(pt.x()+2);
+        pt.setY(pt.y()+22);
 
         QTreeWidgetItem *item = obj_widgetList->currentItem();
-        if(!map_widgetList.contains(item->text(0))){
+        QString wid_filename = item->text(0);
+        if(!map_widgetList.contains(wid_filename)){
             act_wlrc_Enable->setText("Show");
             act_wlrc_Reload->setEnabled(false);
-        }else if(map_widgetList.contains(item->text(0))){
+        }else if(map_widgetList.contains(wid_filename)){
             act_wlrc_Enable->setText("Hide");
             act_wlrc_Reload->setEnabled(true);
         }
@@ -164,8 +217,6 @@ void mainWindow::addActionsToTray(){
         }
     });
     connect(quit, &QAction::triggered, [=]{
-        qDebug() << "Quit";
-
         // Close the widgets too.
         for(auto e : map_widgetList.keys()){
           delete map_widgetList.value(e);
@@ -189,6 +240,14 @@ void mainWindow::addTrayIcon(){
     trayIcon->setContextMenu(trayMenu);
     trayIcon->setIcon(*appIcon);
     trayIcon->show();
+    connect(trayIcon, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason){
+        if(reason == QSystemTrayIcon::DoubleClick){
+            qDebug() << "DoubleClick ShowManager";
+            this->setVisible(true);
+            this->raise();
+            QApplication::setActiveWindow(this);
+        }
+    });
 
 }
 
@@ -215,4 +274,9 @@ void mainWindow::appConfig(){
 void mainWindow::on_obj_showFolderBtn_clicked()
 {
     QDesktopServices::openUrl(widgetsDir);
+}
+
+void mainWindow::on_obj_refreshWidgetListBtn_clicked()
+{
+    updateWidgetList(ui->obj_widgetList);
 }
