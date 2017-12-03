@@ -9,12 +9,13 @@ class WWidget : public QQuickView
     Q_OBJECT
 
 public:
-    WWidget(const QUrl fileurl, const QString filepath);
+    WWidget(const QUrl fileurl, const QString filename);
+    ~WWidget();
 
     // QML File and Reloading the QML Engine
     void reload();
     QUrl fileurl;
-    QString filepath;
+    QString filename;
 private:
     // Window Dragging.
     bool isDragging = false;

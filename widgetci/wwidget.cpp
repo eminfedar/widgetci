@@ -6,11 +6,11 @@
 #include <QMessageBox>
 
 
-WWidget::WWidget(const QUrl fileurl, const QString filepath) : QQuickView(fileurl)
+WWidget::WWidget(const QUrl fileurl, const QString filename) : QQuickView(fileurl)
 {
     // Store the widget's qml file url and path.`
     this->fileurl = fileurl;
-    this->filepath = filepath;
+    this->filename = filename;
     this->setParent(Q_NULLPTR);
 
     // Transparent and Frameless Window:
@@ -25,14 +25,20 @@ WWidget::WWidget(const QUrl fileurl, const QString filepath) : QQuickView(fileur
     addHoverButtons();
 }
 
+WWidget::~WWidget(){
+    // Deconstructor
+}
+
 void WWidget::reload(){
     this->setSource(QUrl());
     this->engine()->clearComponentCache();
     this->setSource(fileurl);
 }
 
-// Drag&Drop the widget: (This prevents qml's onClick events.)
+// Drag&Drop the widget:
 void WWidget::mousePressEvent(QMouseEvent *event){
+    QQuickView::mousePressEvent(event);
+
     switch (event->button()) {
     case (Qt::LeftButton): {
         isDragging = true;
@@ -42,8 +48,8 @@ void WWidget::mousePressEvent(QMouseEvent *event){
     }
     case (Qt::RightButton): {
         QPoint pt(event->pos());
-        pt.setX(pt.x()+4);
-        pt.setY(pt.y()+20);
+        pt.setX(pt.x()+2);
+        pt.setY(pt.y()+2);
         menu_rightClick->exec( this->mapToGlobal(pt) );
         break;
     }
@@ -53,11 +59,14 @@ void WWidget::mousePressEvent(QMouseEvent *event){
 
 }
 void WWidget::mouseMoveEvent(QMouseEvent *event){
+    QQuickView::mouseMoveEvent(event);
+
     if(isDragging)
         this->setPosition(event->globalX() - dragX, event->globalY() - dragY);
 }
 void WWidget::mouseReleaseEvent(QMouseEvent *event){
-    Q_UNUSED(event)
+    QQuickView::mouseReleaseEvent(event);
+
     isDragging = false;
 }
 
@@ -82,8 +91,6 @@ void WWidget::addRightClickMenu(){
     // -- Hide
     QAction* act_Hide = new QAction("Hide",this);
     connect(act_Hide, &QAction::triggered, [=]{
-        this->close();
-        this->destroy();
         delete this;
     });
     // -- Reload
