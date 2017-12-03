@@ -22,7 +22,6 @@ WWidget::WWidget(const QUrl fileurl, const QString filename) : QQuickView(fileur
 
     // Widget's RightClick Menu
     addRightClickMenu();
-    addHoverButtons();
 }
 
 WWidget::~WWidget(){
@@ -68,13 +67,6 @@ void WWidget::mouseReleaseEvent(QMouseEvent *event){
     QQuickView::mouseReleaseEvent(event);
 
     isDragging = false;
-}
-
-
-void WWidget::addHoverButtons(){
-    QQuickItem* moveImg = new QQuickItem();
-    Q_UNUSED(moveImg);
-
 }
 
 void WWidget::addRightClickMenu(){
