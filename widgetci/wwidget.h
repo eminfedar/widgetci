@@ -14,8 +14,12 @@ public:
 
     // QML File and Reloading the QML Engine
     void reload();
+
+    // Widget's path
+    QString widgetpath;
     QUrl fileurl;
     QString filename;
+
 private:
     // Window Dragging.
     bool isDragging = false;
@@ -38,7 +42,6 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-
 };
 
 #endif // WWIDGET_H

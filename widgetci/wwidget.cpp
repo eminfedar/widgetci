@@ -6,22 +6,23 @@
 #include <QMessageBox>
 
 
-WWidget::WWidget(const QUrl fileurl, const QString filename) : QQuickView(fileurl)
+WWidget::WWidget(const QUrl fileurl, const QString filename) :
+    QQuickView(fileurl),
+    widgetpath(fileurl.toDisplayString()),
+    fileurl(fileurl),
+    filename(filename)
 {
-    // Store the widget's qml file url and path.`
-    this->fileurl = fileurl;
-    this->filename = filename;
     this->setParent(Q_NULLPTR);
 
     // Transparent and Frameless Window:
     this->setFlags(this->normalFlags);
     this->setColor(QColor(0,0,0,0));
 
-    // Show:
-    this->show();
-
     // Widget's RightClick Menu
     addRightClickMenu();
+
+    // Show:
+    this->show();
 }
 
 WWidget::~WWidget(){
