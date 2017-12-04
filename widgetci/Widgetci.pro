@@ -5,7 +5,7 @@
 #
 #-------------------------------------------------
 
-QT += widgets quick
+QT += widgets quick qml
 
 TARGET = Widgetci
 TEMPLATE = app
@@ -13,11 +13,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     wwidget.cpp \
-    runguard.cpp
+    runguard.cpp \
+    wqmlfile.cpp
 
 HEADERS  += mainwindow.h \
     wwidget.h \
-    runguard.h
+    runguard.h \
+    wqmlfile.h \
 
 FORMS    += mainwindow.ui
 
