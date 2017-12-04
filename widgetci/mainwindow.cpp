@@ -12,6 +12,9 @@
 #include <QSystemTrayIcon>
 #include <QMessageBox>
 
+#include <QtQml/qqml.h>
+#include "wqmlfile.h"
+
 mainWindow::mainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::mainWindow)
@@ -20,6 +23,8 @@ mainWindow::mainWindow(QWidget *parent) :
 
     appConfig();
     addTrayIcon();
+    addQmlApis();
+
     loadWidgets();
 }
 
@@ -27,6 +32,11 @@ mainWindow::~mainWindow()
 {
     delete ui;
 }
+
+void mainWindow::addQmlApis(){
+    qmlRegisterType<wqmlfile>("com.widgetci.file", 1, 0, "WFile");
+}
+
 void mainWindow::closeEvent(QCloseEvent *event){
     event->ignore();
     this->setVisible(false);
@@ -56,19 +66,21 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item){
 
         map_widgetList.insert(wid->filename, wid);
 
+        item->setIcon(0, ico_toggleon);
+        item->setTextColor(0, colorOn);
+
         // Delete the widget from list when destroyed
-        connect(wid, &QQuickWindow::destroyed, [=, &item]{
+        disconnect(wid, &QQuickWindow::destroyed, 0, 0);
+        connect(wid, &QQuickWindow::destroyed, [=]{
             if(map_widgetList.contains(wid->filename)){
                 map_widgetList.remove(wid->filename);
 
-                item->setIcon(0, ico_toggleoff);
                 item->setTextColor(0, colorOff);
+                item->setIcon(0, ico_toggleoff);
             }
 
         });
 
-        item->setIcon(0, ico_toggleon);
-        item->setTextColor(0, colorOn);
     }else if(map_widgetList.contains(wid_filename)){
         delete map_widgetList[wid_filename];
 

@@ -6,10 +6,9 @@ int main(int argc, char *argv[])
 {
     // Prevent multiple instances
     RunGuard guard( "widgetci_prevent_double_run" );
-        if ( !guard.tryToRun() )
-            return 0;
+    if ( !guard.tryToRun() ) return 0;
 
-
+    // Define the application
     QApplication a(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
 
@@ -58,9 +57,10 @@ int main(int argc, char *argv[])
         a.setStyleSheet(style);
     #endif
 
-
+    // Define the window
     mainWindow w;
     w.show();
 
+    // Start the app
     return a.exec();
 }
