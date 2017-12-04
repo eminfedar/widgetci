@@ -15,6 +15,7 @@
 namespace Ui {
     class mainWindow;
     class WWidget;
+    class wqmlfile;
 }
 
 // MAIN MANAGER WINDOWS
@@ -28,7 +29,6 @@ public:
 
 private slots:
     void on_obj_showFolderBtn_clicked();
-
     void on_obj_refreshWidgetListBtn_clicked();
 
 private:
@@ -56,6 +56,9 @@ private:
     // App Config
     void appConfig();
     QString configDir, widgetsDir;
+
+    // Adding apis for qml using. (like file managing in qml)
+    void addQmlApis();
 
 protected:
     void closeEvent(QCloseEvent *event);
