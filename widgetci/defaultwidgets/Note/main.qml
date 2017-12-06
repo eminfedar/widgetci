@@ -2,19 +2,22 @@ import QtQuick 2.5
 import com.widgetci.file 1.0
 
 Item {
-
+    id: base;
     // Required for saving file.
     property string widgetName: "Note"; // Name of the folder.
     property string fileContent: wFile.readFile(widgetName, "notes.txt");
 
-    width: 200;
+    width: 250;
     height: 300;
 
     Rectangle{
-        width:200;
-        height:300;
-        color: "#99111111";
+        id: baseRect;
+        width: base.width;
+        height: base.height;
+        color: "#CC111111";
         radius: 12;
+        border.color: "#11FFFFFF";
+        border.width: 1;
     }
 
     FocusScope{
@@ -24,13 +27,16 @@ Item {
         onActiveFocusChanged: {
             if(!focusScope.activeFocus){
                 wFile.saveFile(widgetName, "notes.txt", (editorName.text + "%^" + editor.text));
+                baseRect.border.width = 0;
+            }else {
+                baseRect.border.width = 1;
             }
         }
 
         TextEdit{
             id: editorName
             y: 5;
-            width: 190;
+            width: base.width - 10;
 
             text: fileContent.split("%^")[0].length > 0 ? fileContent.split("%^")[0] : "#Give a Name#";
             color: "#F0F0F0";
@@ -42,9 +48,9 @@ Item {
         TextEdit{
             id:editor
             x: 10;
-            y: 25;
-            width:180;
-            height:260;
+            y: 27;
+            width: base.width - 20;
+            height: base.height - 50 + 10;
 
             font.bold: true;
 
