@@ -271,7 +271,9 @@ void mainWindow::appConfig(){
     // Create the directory if not exists.
     QDir dir(widgetsDir);
     if(!dir.exists()){
-        dir.mkpath(widgetsDir + "/example");
+        dir.mkpath(widgetsDir + "/Example");
+        dir.mkpath(widgetsDir + "/Note");
+        dir.mkpath(widgetsDir + "/Watch");
 
         // Copy the example widget to the appDataDir
         QFile file;

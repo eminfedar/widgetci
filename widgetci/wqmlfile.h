@@ -11,9 +11,11 @@ class wqmlfile : public QObject
 public:
     wqmlfile();
 
+    QString appDataDir, widgetsDir;
+
 public slots:
-    QString readFile(QString path) const;
-    bool saveFile(QString path, QString data) const;
+    QString readFile(QString widgetName, QString path) const;
+    QString saveFile(QString widgetName, QString path, QString data) const;
 };
 
 #endif // WQMLFILE_H
