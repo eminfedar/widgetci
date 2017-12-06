@@ -5,6 +5,7 @@ Item {
 
     // Required for saving file.
     property string widgetName: "Note"; // Name of the folder.
+    property string fileContent: wFile.readFile(widgetName, "notes.txt");
 
     width: 200;
     height: 300;
@@ -22,15 +23,16 @@ Item {
 
         onActiveFocusChanged: {
             if(!focusScope.activeFocus){
-                wFile.saveFile(widgetName, "notes.txt", editor.text);
+                wFile.saveFile(widgetName, "notes.txt", (editorName.text + "%^" + editor.text));
             }
         }
 
-        Text{
+        TextEdit{
+            id: editorName
             y: 5;
             width: 190;
 
-            text: "Keep";
+            text: fileContent.split("%^")[0].length > 0 ? fileContent.split("%^")[0] : "#Give a Name#";
             color: "#F0F0F0";
 
 
@@ -54,7 +56,7 @@ Item {
             selectByKeyboard: true;
 
             color: "#FFF";
-            text: wFile.readFile(widgetName, "notes.txt");
+            text: fileContent.split("%^")[1] !== undefined ? fileContent.split("%^")[1] : "#Notes here!#";
 
         }
     }
