@@ -1,9 +1,10 @@
-import QtQuick 2.8
+import QtQuick 2.5
 import com.widgetci.file 1.0
 
 Item {
 
-    property string savePath: "/home/eminfedar/.config/Widgetci/widgets/Note/notes.txt"
+    // Required for saving file.
+    property string widgetName: "Note"; // Name of the folder.
 
     width: 200;
     height: 300;
@@ -21,7 +22,7 @@ Item {
 
         onActiveFocusChanged: {
             if(!focusScope.activeFocus){
-                wFile.saveFile(savePath, editor.text);
+                wFile.saveFile(widgetName, "notes.txt", editor.text);
             }
         }
 
@@ -53,12 +54,12 @@ Item {
             selectByKeyboard: true;
 
             color: "#FFF";
-            text: wFile.readFile(savePath);
+            text: wFile.readFile(widgetName, "notes.txt");
 
         }
     }
 
-    // Widgetci's file manager. (for read & write files.)
+    // Widgetci's file manager. (for read & write files.) (import com.widgetci.file 1.0)
     WFile{
         id: wFile;
     }
