@@ -55,7 +55,7 @@ private:
 
     // App Config
     void appConfig();
-    QString configDir, widgetsDir;
+    QString appDataDir, widgetsDir;
 
     // Adding apis for qml using. (like file managing in qml)
     void addQmlApis();

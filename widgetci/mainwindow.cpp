@@ -223,8 +223,7 @@ void mainWindow::addActionsToTray(){
         QApplication::setActiveWindow(this);
     });
     connect(reloadAll, &QAction::triggered, [=]{
-        for(auto e : map_widgetList.keys())
-        {
+        for(auto e : map_widgetList.keys()){
           map_widgetList.value(e)->reload();
         }
     });
@@ -265,8 +264,8 @@ void mainWindow::addTrayIcon(){
 
 void mainWindow::appConfig(){
     // Set directory variables.
-    configDir = QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation)[0];
-    widgetsDir = configDir + "/widgets";
+    appDataDir = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)[0];
+    widgetsDir = appDataDir + "/widgets";
 
 
     // Create the directory if not exists.
@@ -274,12 +273,14 @@ void mainWindow::appConfig(){
     if(!dir.exists()){
         dir.mkpath(widgetsDir + "/example");
 
-        // Copy the example widget to the configDir
+        // Copy the example widget to the appDataDir
         QFile file;
-        if(file.copy(":/widgets/example/example.qml", widgetsDir + "/example/main.qml")
-        && file.copy(":/widgets/example/test.png", widgetsDir + "/example/test.png")){
+        if(file.copy(":/widgets/defaultwidgets/Example/main.qml", widgetsDir + "/Example/main.qml")
+        && file.copy(":/widgets/defaultwidgets/Example/test.png", widgetsDir + "/Example/test.png")
+        && file.copy(":/widgets/defaultwidgets/Note/main.qml", widgetsDir + "/Note/main.qml")
+        && file.copy(":/widgets/defaultwidgets/Watch/main.qml", widgetsDir + "/Watch/main.qml")){
             qDebug() << "Example successfully copied.";
-        }else qDebug() << "ERR: " << file.errorString();
+        }else qDebug() << "Error while copying example files to widgetsDir: " << widgetsDir;
     }
 }
 

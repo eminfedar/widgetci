@@ -5,8 +5,10 @@
         <file>img/toggleon.png</file>
         <file>img/icon.png</file>
     </qresource>
-    <qresource prefix="/widgets/example">
-        <file>example.qml</file>
-        <file>img/test.png</file>
+    <qresource prefix="/widgets">
+        <file>defaultwidgets/Example/test.png</file>
+        <file>defaultwidgets/Example/main.qml</file>
+        <file>defaultwidgets/Note/main.qml</file>
+        <file>defaultwidgets/Watch/main.qml</file>
     </qresource>
 </RCC>
