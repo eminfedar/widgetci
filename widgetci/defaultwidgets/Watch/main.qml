@@ -2,7 +2,7 @@
     == Widgetci - https://github.com/eminfedar/widgetci ==
 
     "THIS 'watch' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
-    CAN BE EDITED AND USED. LICENSED WITH GPL."
+    CAN BE EDITED AND USED."
 
     - @eminfedar
 */

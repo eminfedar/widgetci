@@ -1,3 +1,12 @@
+/*
+    == Widgetci - https://github.com/eminfedar/widgetci ==
+
+    "THIS 'note' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
+    CAN BE EDITED AND USED."
+
+    - @eminfedar
+*/
+
 import QtQuick 2.5
 import com.widgetci.file 1.0
 
