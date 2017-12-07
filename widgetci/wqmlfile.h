@@ -16,6 +16,9 @@ public:
 public slots:
     QString readFile(QString widgetName, QString path) const;
     QString saveFile(QString widgetName, QString path, QString data) const;
+
+    QString readFileAnywhere(QString path) const;
+    QString saveFileAnywhere(QString path, QString data) const;
 };
 
 #endif // WQMLFILE_H

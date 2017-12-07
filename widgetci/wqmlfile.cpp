@@ -32,13 +32,8 @@ QString wqmlfile::readFile(QString widgetName, QString file) const{
         return "ERR: Can't access the file\n(maybe some program using it):" + file;
 
     // Reading.
-    QString returnString = "";
     QTextStream in(&fi);
-    while(!in.atEnd()){
-        returnString += in.readLine();
-    }
-
-    return returnString;
+    return in.readAll();
 }
 
 QString wqmlfile::saveFile(QString widgetName, QString file, QString data) const{
@@ -57,6 +52,43 @@ QString wqmlfile::saveFile(QString widgetName, QString file, QString data) const
     // Default path for creating file from qml is '%appDataDir%/widgets/%widgetName%'.
     file = widgetsDir + widgetName + "/" + file;
 
+
+    // Opening the file
+    QFile fi(file);
+    if(!fi.open(QFile::WriteOnly | QFile::Text))
+        return "ERR: Can't access the file\n(maybe some program using it):" + file;
+
+    // Write the file.
+    QTextStream out(&fi);
+    out << data;
+
+    return "";
+}
+
+QString wqmlfile::readFileAnywhere(QString file) const{
+    // Checking if parameters are null or empty.
+    if(file.isEmpty() || file.isNull()){
+        return "ERR: 1st parameter is empty or null. (file)";
+    }
+
+    // Creating the file and opening.
+    QFile fi(file);
+    if(!fi.open(QFile::ReadWrite | QFile::Text))
+        return "ERR: Can't access the file\n(maybe some program using it):" + file;
+
+    // Reading.
+    QTextStream in(&fi);
+    return in.readAll();
+}
+
+QString wqmlfile::saveFileAnywhere(QString file, QString data) const{
+    // Checking if parameters are null or empty.
+    if(file.isEmpty() || file.isNull()){
+        return "ERR: 1st parameter is empty or null. (file)";
+    }
+    if(data.isEmpty() || data.isNull()){
+        return "ERR: 2nd parameter is empty or null. (data)";
+    }
 
     // Opening the file
     QFile fi(file);
