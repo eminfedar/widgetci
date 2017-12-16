@@ -33,3 +33,6 @@
 
 # QT User files
 *.pro.user
+
+widgetci/Debug
+widgetci/Release
