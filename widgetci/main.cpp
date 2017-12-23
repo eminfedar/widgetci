@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
     // Define the window
     mainWindow w;
-    w.show();
+    //w.show(); // not show if has opened widgets. but if hasn't, inside the constructor, widgetManager will be shown.
 
     // Start the app
     return a.exec();
