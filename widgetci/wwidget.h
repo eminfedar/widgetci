@@ -9,7 +9,7 @@ class WWidget : public QQuickView
     Q_OBJECT
 
 public:
-    WWidget(const QUrl fileurl, const QString filename);
+    WWidget(const QUrl fileurl, const QString filename, const int wx, const int wy);
     ~WWidget();
 
     // QML File and Reloading the QML Engine

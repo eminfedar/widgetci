@@ -6,7 +6,7 @@
 #include <QMessageBox>
 
 
-WWidget::WWidget(const QUrl fileurl, const QString filename) :
+WWidget::WWidget(const QUrl fileurl, const QString filename, const int wx, const int wy):
     QQuickView(fileurl),
     widgetpath(fileurl.toDisplayString()),
     fileurl(fileurl),
@@ -17,6 +17,9 @@ WWidget::WWidget(const QUrl fileurl, const QString filename) :
     // Transparent and Frameless Window:
     this->setFlags(this->normalFlags);
     this->setColor(QColor(0,0,0,0));
+
+    // Position
+    if(wx != -1000 && wy != -1000) this->setPosition(wx, wy);
 
     // Widget's RightClick Menu
     addRightClickMenu();

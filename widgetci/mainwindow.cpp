@@ -25,7 +25,8 @@ mainWindow::mainWindow(QWidget *parent) :
     addTrayIcon();
     addQmlApis();
 
-    loadWidgets();
+    loadWidgetsToList();
+    openWidgetsInFile();
 }
 
 mainWindow::~mainWindow()
@@ -37,15 +38,47 @@ void mainWindow::addQmlApis(){
     qmlRegisterType<wqmlfile>("com.widgetci.file", 1, 0, "WFile");
 }
 
-void mainWindow::closeEvent(QCloseEvent *event){
-    event->ignore();
-    this->setVisible(false);
+void mainWindow::openWidgetsInFile(){
+    QFile file(appDataDir + "/widgets.lst");
+    if(file.open(QIODevice::ReadOnly)){
+        QTextStream in(&file);
+
+        int count = 0;
+        while(!in.atEnd()){
+            QString name;
+            int wx, wy;
+            in >> name >> wx >> wy;
+            while(name.indexOf('^') >= 0){
+                name.replace(name.indexOf('^'), 1, ' ');
+            }
+            toggleWidget(name, wx, wy);
+            count++;
+        }
+        file.close();
+
+        // If no widgets, open widget manager
+        if(count == 0) this->show();
+    } else {
+        this->show();
+    }
+
 }
 
-void mainWindow::toggleWidget(QTreeWidgetItem *item){
+void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1000){
     QString wid_filename = item->text(0);
+
+    // If widget not exists.
     if(!map_widgetList.contains(wid_filename)){
-        WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + wid_filename + "/main.qml"), wid_filename);
+
+        //Check if has spesific coordinates
+        if(wx == -1000 || wy == -1000){
+            QPoint xy = getWidgetSavedCoordinates(item->text(0));
+            wx = xy.x();
+            wy = xy.y();
+        }
+
+        // Add the widget
+        WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + wid_filename + "/main.qml"), wid_filename, wx, wy);
 
         // Check for errors. (File not found etc...)
         if( wid->status() == QQuickView::Error ){
@@ -73,20 +106,58 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item){
         disconnect(wid, &QQuickWindow::destroyed, 0, 0);
         connect(wid, &QQuickWindow::destroyed, [=]{
             if(map_widgetList.contains(wid->filename)){
+                if(!CLOSING) saveWidgetsCoordinates(); // Not save when closing.
+
                 map_widgetList.remove(wid->filename);
 
                 item->setTextColor(0, colorOff);
                 item->setIcon(0, ico_toggleoff);
             }
-
         });
 
     }else if(map_widgetList.contains(wid_filename)){
         delete map_widgetList[wid_filename];
-
-        item->setIcon(0, ico_toggleoff);
-        item->setTextColor(0, colorOff);
     }
+}
+
+void mainWindow::toggleWidget(QString widgetName, int wx = -1000, int wy = -1000){
+    QList <QTreeWidgetItem *> items = obj_widgetList->findItems(widgetName, Qt::MatchExactly, 0);
+    if(items.length() > 0){
+        toggleWidget(items[0], wx, wy);
+    }
+}
+
+QPoint mainWindow::getWidgetSavedCoordinates(QString widgetname){
+    QFile file(appDataDir + "/widgets.lst");
+    QPoint tmpPoint;
+    tmpPoint.setX(-1000);
+    tmpPoint.setY(-1000);
+
+    if(file.open(QIODevice::ReadOnly)){
+        QTextStream in(&file);
+
+        while(!in.atEnd()){
+            QString name;
+            int wx, wy;
+            in >> name >> wx >> wy;
+
+            while(name.indexOf('^') >= 0){
+                name.replace(name.indexOf('^'), 1, ' ');
+            }
+            if(name == widgetname){
+                tmpPoint.setX(wx);
+                tmpPoint.setY(wy);
+
+                file.close();
+                return tmpPoint;
+            }
+        }
+        file.close();
+    }else{
+        qDebug() << file.errorString();
+    }
+
+    return tmpPoint;
 }
 
 void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
@@ -112,7 +183,7 @@ void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
     });
 }
 
-void mainWindow::loadWidgets(){
+void mainWindow::loadWidgetsToList(){
     // Initialize the variables
     ico_toggleoff = QIcon(":/img/toggleoff.png");
     ico_toggleon = QIcon(":/img/toggleon.png");
@@ -228,11 +299,8 @@ void mainWindow::addActionsToTray(){
         }
     });
     connect(quit, &QAction::triggered, [=]{
-        // Close the widgets too.
-        for(auto e : map_widgetList.keys()){
-          delete map_widgetList.value(e);
-        }
-        QApplication::quit();
+        onAppQuit();
+
     });
 }
 
@@ -283,7 +351,14 @@ void mainWindow::appConfig(){
         && file.copy(":/widgets/defaultwidgets/Watch/main.qml", widgetsDir + "/Watch/main.qml")){
             qDebug() << "Example successfully copied.";
         }else qDebug() << "Error while copying example files to widgetsDir: " << widgetsDir;
+
+        // Create file
+        QFile ftmp(appDataDir + "/widgets.lst");
+        ftmp.open(QIODevice::WriteOnly);
+        ftmp.close();
     }
+
+    // Load saved and open widgets.
 }
 
 void mainWindow::on_obj_showFolderBtn_clicked()
@@ -294,4 +369,42 @@ void mainWindow::on_obj_showFolderBtn_clicked()
 void mainWindow::on_obj_refreshWidgetListBtn_clicked()
 {
     updateWidgetList(ui->obj_widgetList);
+}
+
+void mainWindow::saveWidgetsCoordinates(){
+    // Save the widgets infos.
+    QFile file(appDataDir + "/widgets.lst");
+    if(file.open(QIODevice::WriteOnly)){
+        QTextStream out(&file);
+
+        QMapIterator<QString, WWidget*> i(map_widgetList);
+        while (i.hasNext()) {
+            i.next(); // Kaydetmede bosluklu isim olursa sikinti olacak.
+            QString wName = i.key();
+            while(wName.indexOf(' ') >= 0){
+                wName.replace(wName.indexOf(' '), 1, '^');
+            }
+            out << wName << ' ' << ((WWidget*)i.value())->x() << ' ' << ((WWidget*)i.value())->y() << '\n';
+        }
+        file.close();
+    }
+}
+
+void mainWindow::onAppQuit(){
+    CLOSING = true;
+
+    // Save the widgets infos.
+    saveWidgetsCoordinates();
+
+    // Close the widgets too.
+    for(auto e : map_widgetList.keys()){
+      delete map_widgetList.value(e);
+    }
+    QApplication::quit();
+}
+
+// Window Close Event
+void mainWindow::closeEvent(QCloseEvent *event){
+    event->ignore();
+    this->setVisible(false);
 }

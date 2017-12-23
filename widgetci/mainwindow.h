@@ -27,6 +27,8 @@ public:
     explicit mainWindow(QWidget *parent = 0);
     ~mainWindow();
 
+    bool CLOSING = false;
+
 private slots:
     void on_obj_showFolderBtn_clicked();
     void on_obj_refreshWidgetListBtn_clicked();
@@ -36,8 +38,12 @@ private:
 
     // Listing the widgets:
     void updateWidgetList(QTreeWidget* widgetList_obj);
-    void loadWidgets();
-    void toggleWidget(QTreeWidgetItem *item);
+    void loadWidgetsToList();
+    void toggleWidget(QTreeWidgetItem *item, int x, int y);
+    void toggleWidget(QString widgetName, int x, int y);
+    QPoint getWidgetSavedCoordinates(QString name);
+    void saveWidgetsCoordinates();
+
     QTreeWidget *obj_widgetList;
     QMap<QString, WWidget *> map_widgetList;
     QIcon ico_toggleoff, ico_toggleon;
@@ -59,6 +65,12 @@ private:
 
     // Adding apis for qml using. (like file managing in qml)
     void addQmlApis();
+
+    // onStart
+    void openWidgetsInFile();
+
+    // onQuit
+    void onAppQuit();
 
 protected:
     void closeEvent(QCloseEvent *event);

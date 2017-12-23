@@ -33,7 +33,10 @@ QString wqmlfile::readFile(QString widgetName, QString file) const{
 
     // Reading.
     QTextStream in(&fi);
-    return in.readAll();
+    QString content = in.readAll();
+    fi.close();
+
+    return content;
 }
 
 QString wqmlfile::saveFile(QString widgetName, QString file, QString data) const{
@@ -61,6 +64,7 @@ QString wqmlfile::saveFile(QString widgetName, QString file, QString data) const
     // Write the file.
     QTextStream out(&fi);
     out << data;
+    fi.close();
 
     return "";
 }
@@ -78,7 +82,10 @@ QString wqmlfile::readFileAnywhere(QString file) const{
 
     // Reading.
     QTextStream in(&fi);
-    return in.readAll();
+    QString content = in.readAll();
+    fi.close();
+
+    return content;
 }
 
 QString wqmlfile::saveFileAnywhere(QString file, QString data) const{
@@ -98,6 +105,7 @@ QString wqmlfile::saveFileAnywhere(QString file, QString data) const{
     // Write the file.
     QTextStream out(&fi);
     out << data;
+    fi.close();
 
     return "";
 }
