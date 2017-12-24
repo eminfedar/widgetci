@@ -2,7 +2,7 @@
     == Widgetci - https://github.com/eminfedar/widgetci ==
 
     "THIS 'watch' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
-    CAN BE EDITED AND USED."
+    CAN BE EDITED AND USED. LICENSED WITH GPL."
 
     - @eminfedar
 */
@@ -34,7 +34,7 @@ Item {
 
         text: new Date().toLocaleString(locale, "HH:mm");
         color: "#FFFFFFFF";
-        opacity: 0.8;
+        opacity: 0.9;
     }
 
     Text{
@@ -49,6 +49,6 @@ Item {
 
         text: new Date().toLocaleString(locale, "dddd, dd/MM");
         color: "#FFFFFFFF";
-        opacity: 0.8;
+        opacity: 0.9;
     }
 }

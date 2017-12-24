@@ -1,12 +1,3 @@
-/*
-    == Widgetci - https://github.com/eminfedar/widgetci ==
-
-    "THIS 'example' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
-    CAN BE EDITED AND USED."
-
-    - @eminfedar
-*/
-
 // This is simple example of a widget.
 // Main widget must named by "main.qml" in the widget folder.
 // You must create a 'Item' or 'Rectangle' object as a parent
@@ -75,11 +66,6 @@ Item {
         text: getText("https://api.ipify.org/?format=plain", urltesttext)
     }
 
-
-    /* THOSE ARE NOT WORKING
-      BECAUSE WWidget::mousePressEvent,
-                WWidget::mouseMoveEvent,
-                WWidget::mouseReleaseEvent are preventing.*/
     // Clickable text example.
     /*Text {
         y: 130

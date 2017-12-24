@@ -1,12 +1,3 @@
-/*
-    == Widgetci - https://github.com/eminfedar/widgetci ==
-
-    "THIS 'note' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
-    CAN BE EDITED AND USED."
-
-    - @eminfedar
-*/
-
 import QtQuick 2.5
 import com.widgetci.file 1.0
 
@@ -17,13 +8,13 @@ Item {
     property string fileContent: wFile.readFile(widgetName, "notes.txt");
 
     width: 250;
-    height: 300;
+    height: 400;
 
     Rectangle{
         id: baseRect;
         width: base.width;
-        height: base.height;
-        color: "#CC111111";
+        height: base.height-10;
+        color: "#F6111111";
         radius: 12;
         border.color: "#11FFFFFF";
         border.width: 1;
@@ -44,11 +35,13 @@ Item {
 
         TextEdit{
             id: editorName
-            y: 5;
+            y: 8;
             width: base.width - 10;
 
             text: fileContent.split("%^")[0].length > 0 ? fileContent.split("%^")[0] : "#Give a Name#";
             color: "#F0F0F0";
+
+            font.bold: true;
 
 
             horizontalAlignment: Text.AlignHCenter;
@@ -57,11 +50,9 @@ Item {
         TextEdit{
             id:editor
             x: 10;
-            y: 27;
+            y: 32;
             width: base.width - 20;
             height: base.height - 50 + 10;
-
-            font.bold: true;
 
             wrapMode: TextEdit.Wrap;
             textFormat: TextEdit.PlainText;
