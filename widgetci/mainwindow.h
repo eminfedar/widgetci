@@ -10,6 +10,7 @@
 #include <QMap>
 #include <QIcon>
 #include <QColor>
+#include <QSettings>
 
 
 namespace Ui {
@@ -38,11 +39,13 @@ private:
 
     // Listing the widgets:
     void updateWidgetList(QTreeWidget* widgetList_obj);
-    void loadWidgetsToList();
+    void addTreeRightClickMenu();
     void toggleWidget(QTreeWidgetItem *item, int x, int y);
     void toggleWidget(QString widgetName, int x, int y);
-    QPoint getWidgetSavedCoordinates(QString name);
-    void saveWidgetsCoordinates();
+
+    QSettings* widgetsDataSettings;
+    QMap<QString, QVariant> getWidgetSettings(QString name);
+    void saveWidgetSettings(QString name);
 
     QTreeWidget *obj_widgetList;
     QMap<QString, WWidget *> map_widgetList;

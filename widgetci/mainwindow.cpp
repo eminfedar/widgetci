@@ -15,17 +15,14 @@
 #include <QtQml/qqml.h>
 #include "wqmlfile.h"
 
-mainWindow::mainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::mainWindow)
-{
+mainWindow::mainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::mainWindow){
     ui->setupUi(this);
 
     appConfig();
     addTrayIcon();
     addQmlApis();
 
-    loadWidgetsToList();
+    addTreeRightClickMenu();
     openWidgetsInFile();
 }
 
@@ -39,42 +36,36 @@ void mainWindow::addQmlApis(){
 }
 
 void mainWindow::openWidgetsInFile(){
-    QFile file(appDataDir + "/widgets.lst");
-    if(file.open(QIODevice::ReadOnly)){
-        QTextStream in(&file);
+    widgetsDataSettings = new QSettings(appDataDir + "/widgets.ini", QSettings::IniFormat);
 
-        int count = 0;
-        while(!in.atEnd()){
-            QString name;
-            int wx, wy;
-            in >> name >> wx >> wy;
-            while(name.indexOf('^') >= 0){
-                name.replace(name.indexOf('^'), 1, ' ');
-            }
-            toggleWidget(name, wx, wy);
+    int count = 0;
+    for(auto e : widgetsDataSettings->childGroups()){
+        widgetsDataSettings->beginGroup(e);
+        int wx = widgetsDataSettings->value("x", -1000).toInt();
+        int wy = widgetsDataSettings->value("y", -1000).toInt();
+        bool visible = widgetsDataSettings->value("visible", false).toBool();
+        widgetsDataSettings->endGroup();
+
+        if(visible){
+            toggleWidget(e, wx, wy);
             count++;
         }
-        file.close();
-
-        // If no widgets, open widget manager
-        if(count == 0) this->show();
-    } else {
-        this->show();
     }
-
+    if(count == 0) this->show(); // if no widgets visible, show the form.
 }
 
+// Toggle widgets
 void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1000){
     QString wid_filename = item->text(0);
 
-    // If widget not exists.
+    // If widget not exists. Create one.
     if(!map_widgetList.contains(wid_filename)){
 
         //Check if has spesific coordinates
         if(wx == -1000 || wy == -1000){
-            QPoint xy = getWidgetSavedCoordinates(item->text(0));
-            wx = xy.x();
-            wy = xy.y();
+            QMap<QString, QVariant> widConf = getWidgetSettings(item->text(0));
+            wx = widConf["x"].toInt();
+            wy = widConf["y"].toInt();
         }
 
         // Add the widget
@@ -106,7 +97,7 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1
         disconnect(wid, &QQuickWindow::destroyed, 0, 0);
         connect(wid, &QQuickWindow::destroyed, [=]{
             if(map_widgetList.contains(wid->filename)){
-                if(!CLOSING) saveWidgetsCoordinates(); // Not save when closing.
+                if(!CLOSING) saveWidgetSettings(wid->filename); // Save settings before closing the widgets.
 
                 map_widgetList.remove(wid->filename);
 
@@ -119,7 +110,6 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1
         delete map_widgetList[wid_filename];
     }
 }
-
 void mainWindow::toggleWidget(QString widgetName, int wx = -1000, int wy = -1000){
     QList <QTreeWidgetItem *> items = obj_widgetList->findItems(widgetName, Qt::MatchExactly, 0);
     if(items.length() > 0){
@@ -127,37 +117,25 @@ void mainWindow::toggleWidget(QString widgetName, int wx = -1000, int wy = -1000
     }
 }
 
-QPoint mainWindow::getWidgetSavedCoordinates(QString widgetname){
-    QFile file(appDataDir + "/widgets.lst");
-    QPoint tmpPoint;
-    tmpPoint.setX(-1000);
-    tmpPoint.setY(-1000);
+QMap<QString, QVariant> mainWindow::getWidgetSettings(QString widgetname){
+    QMap<QString, QVariant> mapTmp;
 
-    if(file.open(QIODevice::ReadOnly)){
-        QTextStream in(&file);
+    widgetsDataSettings->beginGroup(widgetname);
+    mapTmp["x"] = widgetsDataSettings->value("x", -1000).toInt();
+    mapTmp["y"] = widgetsDataSettings->value("y", -1000).toInt();
+    mapTmp["visible"] = widgetsDataSettings->value("visible", false).toBool();
+    widgetsDataSettings->endGroup();
 
-        while(!in.atEnd()){
-            QString name;
-            int wx, wy;
-            in >> name >> wx >> wy;
+    return mapTmp;
+}
 
-            while(name.indexOf('^') >= 0){
-                name.replace(name.indexOf('^'), 1, ' ');
-            }
-            if(name == widgetname){
-                tmpPoint.setX(wx);
-                tmpPoint.setY(wy);
-
-                file.close();
-                return tmpPoint;
-            }
-        }
-        file.close();
-    }else{
-        qDebug() << file.errorString();
-    }
-
-    return tmpPoint;
+void mainWindow::saveWidgetSettings(QString widgetname){
+    widgetsDataSettings->beginGroup(widgetname);
+    widgetsDataSettings->setValue("x", map_widgetList[widgetname]->x());
+    widgetsDataSettings->setValue("y", map_widgetList[widgetname]->y());
+    widgetsDataSettings->setValue("visible", map_widgetList[widgetname]->isVisible());
+    widgetsDataSettings->endGroup();
+    widgetsDataSettings->sync();
 }
 
 void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
@@ -166,6 +144,7 @@ void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
     QDir dir(widgetsDir);
     QStringList folderList = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
+    // Add folders one by one
     for(int i=0; i<folderList.length(); i++){
         QString folder = folderList.at(i);
 
@@ -174,8 +153,6 @@ void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
         item->setIcon(0, ico_toggleoff);
     }
 
-
-
     // Enable|Disable widgets by double clicking on them
     disconnect(widgetList_obj, &QTreeWidget::itemActivated, 0, 0); // prevent multiple connections & runs
     connect(widgetList_obj, &QTreeWidget::itemActivated, [=](QTreeWidgetItem* item) {
@@ -183,7 +160,7 @@ void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
     });
 }
 
-void mainWindow::loadWidgetsToList(){
+void mainWindow::addTreeRightClickMenu(){
     // Initialize the variables
     ico_toggleoff = QIcon(":/img/toggleoff.png");
     ico_toggleon = QIcon(":/img/toggleon.png");
@@ -193,14 +170,13 @@ void mainWindow::loadWidgetsToList(){
 #else
     colorOff = QColor(0, 0, 0, 255);
 #endif
+
+
     // QTreeWidget list object from ui:
     obj_widgetList = ui->obj_widgetList;
 
-
     // Update & Refresh the widgets
     updateWidgetList(obj_widgetList);
-
-
 
     // Right Click Menu
     obj_widgetList->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -335,70 +311,49 @@ void mainWindow::appConfig(){
     appDataDir = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)[0];
     widgetsDir = appDataDir + "/widgets";
 
-
     // Create the directory if not exists.
     QDir dir(widgetsDir);
     if(!dir.exists()){
-        dir.mkpath(widgetsDir + "/Example");
-        dir.mkpath(widgetsDir + "/Note");
-        dir.mkpath(widgetsDir + "/Watch");
+        QDir localdir(":/widgets/defaultwidgets/");
+        QStringList folderList = localdir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-        // Copy the example widget to the appDataDir
+        // Copy the local folders one by one
         QFile file;
-        if(file.copy(":/widgets/defaultwidgets/Example/main.qml", widgetsDir + "/Example/main.qml")
-        && file.copy(":/widgets/defaultwidgets/Example/test.png", widgetsDir + "/Example/test.png")
-        && file.copy(":/widgets/defaultwidgets/Note/main.qml", widgetsDir + "/Note/main.qml")
-        && file.copy(":/widgets/defaultwidgets/Watch/main.qml", widgetsDir + "/Watch/main.qml")){
-            qDebug() << "Example successfully copied.";
-        }else qDebug() << "Error while copying example files to widgetsDir: " << widgetsDir;
+        for(int i=0; i<folderList.length(); i++){
+            QString folder = folderList.at(i);
 
-        // Create file
-        QFile ftmp(appDataDir + "/widgets.lst");
-        ftmp.open(QIODevice::WriteOnly);
-        ftmp.close();
+            //qDebug() << localdir.path() + folder << widgetsDir + "/" + folder;
+            dir.mkpath(widgetsDir + "/" + folder);
+
+            // Copy the files inside folder
+            QDir filedir(localdir.path() + "/" + folder);
+            QStringList filelist = filedir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+            for (int a = 0; a < filelist.length(); ++a) {
+                file.copy(localdir.path() + "/" + folder + "/" + filelist.at(a), widgetsDir + "/" + folder + "/" + filelist.at(a));
+            }
+        }
     }
-
-    // Load saved and open widgets.
 }
 
-void mainWindow::on_obj_showFolderBtn_clicked()
-{
+void mainWindow::on_obj_showFolderBtn_clicked(){
     QDesktopServices::openUrl(widgetsDir);
 }
 
-void mainWindow::on_obj_refreshWidgetListBtn_clicked()
-{
+void mainWindow::on_obj_refreshWidgetListBtn_clicked(){
     updateWidgetList(ui->obj_widgetList);
 }
 
-void mainWindow::saveWidgetsCoordinates(){
-    // Save the widgets infos.
-    QFile file(appDataDir + "/widgets.lst");
-    if(file.open(QIODevice::WriteOnly)){
-        QTextStream out(&file);
-
-        QMapIterator<QString, WWidget*> i(map_widgetList);
-        while (i.hasNext()) {
-            i.next(); // Kaydetmede bosluklu isim olursa sikinti olacak.
-            QString wName = i.key();
-            while(wName.indexOf(' ') >= 0){
-                wName.replace(wName.indexOf(' '), 1, '^');
-            }
-            out << wName << ' ' << ((WWidget*)i.value())->x() << ' ' << ((WWidget*)i.value())->y() << '\n';
-        }
-        file.close();
-    }
-}
-
+// Before the app quit
 void mainWindow::onAppQuit(){
     CLOSING = true;
 
-    // Save the widgets infos.
-    saveWidgetsCoordinates();
-
     // Close the widgets too.
     for(auto e : map_widgetList.keys()){
-      delete map_widgetList.value(e);
+        // Save widget configs.
+        saveWidgetSettings(e);
+
+        // Destroy them.
+        delete map_widgetList.value(e);
     }
     QApplication::quit();
 }

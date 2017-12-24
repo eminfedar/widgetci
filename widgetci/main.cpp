@@ -12,6 +12,11 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
 
+    // App configs
+    QCoreApplication::setOrganizationName("Widgetci");
+    QCoreApplication::setOrganizationDomain("widgetci.org");
+    QCoreApplication::setApplicationName("Widgetci");
+
     // STYLING.
     #ifdef Q_OS_LINUX || Q_OS_UNIX
         // because in Windows, it's not looking like supposed to be.

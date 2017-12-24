@@ -10,5 +10,7 @@
         <file>defaultwidgets/Example/main.qml</file>
         <file>defaultwidgets/Note/main.qml</file>
         <file>defaultwidgets/Watch/main.qml</file>
+        <file>defaultwidgets/Image/main.qml</file>
+        <file>defaultwidgets/Image/clock_img.jpg</file>
     </qresource>
 </RCC>
