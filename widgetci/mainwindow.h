@@ -60,7 +60,6 @@ private:
     QSystemTrayIcon *trayIcon;
     QMenu *trayMenu;
     QIcon *appIcon;
-    QAction *act_seperator;
 
     // App Config
     void appConfig();

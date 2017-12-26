@@ -24,10 +24,10 @@ private:
     // Window Dragging.
     bool isDragging = false;
     quint16 dragX = 0, dragY = 0;
+    bool lock = false;
 
     // Right Click Menu
     QMenu *menu_rightClick;
-    QAction *act_seperator;
     void addRightClickMenu();
 
     // Window Flags

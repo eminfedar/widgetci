@@ -101,8 +101,11 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1
 
                 map_widgetList.remove(wid->filename);
 
-                item->setTextColor(0, colorOff);
-                item->setIcon(0, ico_toggleoff);
+                QList<QTreeWidgetItem *> item_lst = obj_widgetList->findItems(wid->filename, Qt::MatchExactly, 0);
+                if(item_lst.length() > 0){
+                    item_lst[0]->setTextColor(0, colorOff);
+                    item_lst[0]->setIcon(0, ico_toggleoff);
+                }
             }
         });
 
@@ -151,6 +154,9 @@ void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
         QTreeWidgetItem* item = new QTreeWidgetItem(widgetList_obj);
         item->setText(0, folder);
         item->setIcon(0, ico_toggleoff);
+
+        if(map_widgetList.contains(folder))
+            toggleWidget(folder);
     }
 
     // Enable|Disable widgets by double clicking on them
@@ -183,48 +189,63 @@ void mainWindow::addTreeRightClickMenu(){
     menu_wlRightClick = new QMenu(this);
 
     // Right Click Menu Actions
-    QAction* act_wlrc_Enable = new QAction("Show", this);
-    connect(act_wlrc_Enable, &QAction::triggered, [=]{
-        qDebug() << "Enable/Disable the Widget, Label will change (Show/Hide)";
-
+    QAction* act_wlrc_ShowHide = new QAction("Show", this);
+    connect(act_wlrc_ShowHide, &QAction::triggered, [=]{
+        // Show/Hide Action
         toggleWidget(obj_widgetList->currentItem());
     });
     QAction* act_wlrc_Edit = new QAction("Edit", this);
     connect(act_wlrc_Edit, &QAction::triggered, [=]{
-        qDebug() << "Edit the widget with default editor";
-
+        // Edit the widget file with default editor
         QDesktopServices::openUrl(QUrl::fromLocalFile(widgetsDir + "/" + obj_widgetList->currentItem()->text(0) + "/main.qml"));
     });
     QAction* act_wlrc_Reload = new QAction("Reload", this);
     connect(act_wlrc_Reload, &QAction::triggered, [=]{
-        qDebug() << "Reload  the widget";
-
+        // Reload the widget
         if(map_widgetList.contains(obj_widgetList->currentItem()->text(0)))
             map_widgetList.value(obj_widgetList->currentItem()->text(0))->reload();
     });
     QAction* act_wlrc_RefreshTheList = new QAction("Refresh the list", this);
     connect(act_wlrc_RefreshTheList, &QAction::triggered, [=]{
-        qDebug() << "Refresh the list.";
-
+        // Refresh all the list.
         updateWidgetList(obj_widgetList);
     });
     QAction* act_wlrc_Delete = new QAction("Remove", this);
     connect(act_wlrc_Delete, &QAction::triggered, [=]{
-        qDebug() << "Just remove from list.";
+        if(map_widgetList.contains(obj_widgetList->currentItem()->text(0)))
+            toggleWidget(obj_widgetList->currentItem()->text(0));
+        delete obj_widgetList->currentItem();
+        obj_widgetList->clearSelection();
     });
     QAction* act_wlrc_DeleteDisk = new QAction("Delete From Disk...", this);
     connect(act_wlrc_DeleteDisk, &QAction::triggered, [=]{
-        qDebug() << "ASK: Are you sure for delete from disk?";
+        int answer = QMessageBox::warning(this, "Warning", "The '"+ obj_widgetList->currentItem()->text(0) +"' folder will be deleted from disk.\n\nAre you sure?", QMessageBox::Cancel | QMessageBox::Ok);
+        if(answer == QMessageBox::Ok){
+            QDir folder(widgetsDir + "/" + obj_widgetList->currentItem()->text(0));
+            if(folder.removeRecursively()){
+                QMessageBox::information(this, "Information", "The folder has been deleted successfully.", QMessageBox::Ok);
+                if(map_widgetList.contains(obj_widgetList->currentItem()->text(0))){
+                    toggleWidget(obj_widgetList->currentItem()->text(0));
+                    updateWidgetList(obj_widgetList);
+                }
+
+            }else{
+                QMessageBox::critical(this, "Information", "The folder couldn't be removed.\nCheck the folder and the files may be using by another program.", QMessageBox::Ok);
+            }
+
+
+        }
     });
 
 
 
-    // Add Actions to the Menu
-    menu_wlRightClick->addAction(act_wlrc_Enable);
-    menu_wlRightClick->addAction(act_wlrc_Edit);
+    // Add Actions to the QTreeWidget's Right Click Menu
+    menu_wlRightClick->addAction(act_wlrc_ShowHide);
+    menu_wlRightClick->addSeparator();
     menu_wlRightClick->addAction(act_wlrc_Reload);
+    menu_wlRightClick->addAction(act_wlrc_Edit);
     menu_wlRightClick->addAction(act_wlrc_RefreshTheList);
-    menu_wlRightClick->addAction(act_seperator);
+    menu_wlRightClick->addSeparator();
     menu_wlRightClick->addAction(act_wlrc_Delete);
     menu_wlRightClick->addAction(act_wlrc_DeleteDisk);
     connect(obj_widgetList, &QTreeWidget::customContextMenuRequested, [=](const QPoint & pos) {
@@ -235,10 +256,10 @@ void mainWindow::addTreeRightClickMenu(){
         QTreeWidgetItem *item = obj_widgetList->currentItem();
         QString wid_filename = item->text(0);
         if(!map_widgetList.contains(wid_filename)){
-            act_wlrc_Enable->setText("Show");
+            act_wlrc_ShowHide->setText("Show");
             act_wlrc_Reload->setEnabled(false);
         }else if(map_widgetList.contains(wid_filename)){
-            act_wlrc_Enable->setText("Hide");
+            act_wlrc_ShowHide->setText("Hide");
             act_wlrc_Reload->setEnabled(true);
         }
 
@@ -251,13 +272,11 @@ void mainWindow::addActionsToTray(){
     trayMenu = new QMenu(this);
     QAction* openManager = new QAction("Open Manager...", this);
     QAction* reloadAll = new QAction("Reload All", this);
-    act_seperator = new QAction(this);
-    act_seperator->setSeparator(true);
     QAction* quit = new QAction("Quit", this);
 
     trayMenu->addAction(openManager);
     trayMenu->addAction(reloadAll);
-    trayMenu->addAction(act_seperator);
+    trayMenu->addSeparator();
     trayMenu->addAction(quit);
 
 
@@ -276,7 +295,6 @@ void mainWindow::addActionsToTray(){
     });
     connect(quit, &QAction::triggered, [=]{
         onAppQuit();
-
     });
 }
 

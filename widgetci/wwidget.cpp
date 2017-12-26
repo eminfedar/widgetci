@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QDesktopServices>
 
 
 WWidget::WWidget(const QUrl fileurl, const QString filename, const int wx, const int wy):
@@ -44,9 +45,11 @@ void WWidget::mousePressEvent(QMouseEvent *event){
 
     switch (event->button()) {
     case (Qt::LeftButton): {
-        isDragging = true;
-        dragX = event->x();
-        dragY = event->y();
+        if(!lock){
+            isDragging = true;
+            dragX = event->x();
+            dragY = event->y();
+        }
         break;
     }
     case (Qt::RightButton): {
@@ -64,7 +67,7 @@ void WWidget::mousePressEvent(QMouseEvent *event){
 void WWidget::mouseMoveEvent(QMouseEvent *event){
     QQuickView::mouseMoveEvent(event);
 
-    if(isDragging)
+    if(isDragging && !lock)
         this->setPosition(event->globalX() - dragX, event->globalY() - dragY);
 }
 void WWidget::mouseReleaseEvent(QMouseEvent *event){
@@ -77,8 +80,6 @@ void WWidget::addRightClickMenu(){
     // Menu
     menu_rightClick = new QMenu();
     menu_rightClick->setContextMenuPolicy(Qt::CustomContextMenu);
-    act_seperator = new QAction(this);
-    act_seperator->setSeparator(true);
 
     // Groups (for Radio Button effect)
     QActionGroup* actgr_zPositionGroup = new QActionGroup( this );
@@ -94,7 +95,12 @@ void WWidget::addRightClickMenu(){
     connect(act_Reload, &QAction::triggered, [=]{
         this->reload();
     });
-    // -- {SEPERATOR_AT_HERE}
+    // -- Edit
+    QAction* act_Edit = new QAction("Edit",this);
+    connect(act_Edit, &QAction::triggered, [=]{
+        QDesktopServices::openUrl(fileurl);
+    });
+    // -- {SEPERATOR_AT_HERE} --
     // -- Always on Most Top
     QAction* act_alwaysOnMostTop = new QAction("Always on Most top",this);
     act_alwaysOnMostTop->setCheckable(true);
@@ -173,18 +179,29 @@ void WWidget::addRightClickMenu(){
             this->latestFlags = this->alwaysBottomFlags;
         }
     });
+    // -- Lock
+    QAction* act_Lock = new QAction("Lock",this);
+    act_Lock->setCheckable(true);
+    connect(act_Lock, &QAction::triggered, [=]{
+        lock = !lock;
+        act_Lock->setChecked(lock);
+    });
 
 
 
     // Adding Sub-Menus & Actions
     menu_rightClick->addAction(act_Hide);
+    menu_rightClick->addSeparator();
     menu_rightClick->addAction(act_Reload);
-    menu_rightClick->addAction(act_seperator);
+    menu_rightClick->addAction(act_Edit);
+    menu_rightClick->addSeparator();
     QMenu* submenu_zindex = menu_rightClick->addMenu("Z-Position");
         submenu_zindex->addAction(act_alwaysOnMostTop);
         submenu_zindex->addAction(act_alwaysOnTop);
         submenu_zindex->addAction(act_normal);
         submenu_zindex->addAction(act_alwaysOnBottom);
+    menu_rightClick->addSeparator();
+    menu_rightClick->addAction(act_Lock);
 
 }
 
