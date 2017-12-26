@@ -40,8 +40,17 @@
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="label">
+          <property name="toolTip">
+           <string>Go to http://github.com/eminfedar/widgetci</string>
+          </property>
           <property name="text">
-           <string>v0.1.0</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/eminfedar/widgetci&quot;&gt;&lt;span style=&quot; font-size:10pt; font-style:italic; text-decoration: underline; color:rgba(0,255,0,0.431373);&quot;&gt;support on github&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
+          </property>
+          <property name="openExternalLinks">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -65,8 +74,15 @@
             <height>24</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Refresh the widgets list</string>
+          </property>
           <property name="text">
-           <string>R</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="qtresource.qrc">
+            <normaloff>:/img/reload.png</normaloff>:/img/reload.png</iconset>
           </property>
          </widget>
         </item>
@@ -89,6 +105,9 @@
             <width>24</width>
             <height>24</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Open the widgets folder...</string>
           </property>
           <property name="text">
            <string/>

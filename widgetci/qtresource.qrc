@@ -4,6 +4,7 @@
         <file>img/toggleoff.png</file>
         <file>img/toggleon.png</file>
         <file>img/icon.png</file>
+        <file>img/reload.png</file>
     </qresource>
     <qresource prefix="/widgets">
         <file>defaultwidgets/Example/test.png</file>
