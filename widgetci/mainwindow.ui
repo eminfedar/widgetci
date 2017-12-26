@@ -44,7 +44,7 @@
            <string>Go to http://github.com/eminfedar/widgetci</string>
           </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/eminfedar/widgetci&quot;&gt;&lt;span style=&quot; font-size:10pt; font-style:italic; text-decoration: underline; color:rgba(0,255,0,0.431373);&quot;&gt;support on github&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/eminfedar/widgetci&quot;&gt;&lt;span style=&quot; font-size:10pt; font-style:italic; text-decoration: underline; color:rgba(0,255,0,0.447059);&quot;&gt;contribute on &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;http://github.com/eminfedar/widgetci&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; font-style:italic; text-decoration: underline; color:rgba(200,255,200,0.6);&quot;&gt;GitHub&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="textFormat">
            <enum>Qt::RichText</enum>
