@@ -80,13 +80,16 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1
             }
             errorString.append("\n\nPlease try to fix the error and refresh the list.");
 
-            item->setBackgroundColor(0, QColor(160,0,0,255));
+            item->setBackground(0, QBrush(QColor(160,0,0,255)));
             item->setTextColor(0, QColor(180, 180, 180, 255));
             item->setSelected(false);
 
             QMessageBox::warning(this, "An error occured", errorString, QMessageBox::Ok);
             return;
+        }else if(wid->status() == QQuickView::Ready){
+            item->setBackground(0, QBrush(QColor(0,0,0,0)));
         }
+
 
         map_widgetList.insert(wid->filename, wid);
 

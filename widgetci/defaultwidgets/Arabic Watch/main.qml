@@ -1,7 +1,7 @@
 /*
     == Widgetci - https://github.com/eminfedar/widgetci ==
 
-    "THIS 'watch' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
+    "THIS 'arabic watch' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
     CAN BE EDITED AND USED. LICENSED WITH GPL."
 
     - @eminfedar
@@ -13,7 +13,7 @@ Item {
     width: (timeText.width > dateText.width ? timeText.width : dateText.width);
     height: dateText.height + 130;
 
-    property var locale: Qt.locale();
+    property var locale: Qt.locale("ar_SA");
     property real intervalMs:  (60050 - ((new Date().getSeconds() * 1000) + new Date().getMilliseconds()));
 
     Timer{
@@ -28,7 +28,7 @@ Item {
 
         horizontalAlignment: Text.AlignRight;
         font.pixelSize: 130;
-        font.family: "San Francisco Display, Segoe UI, Noto Sans";
+        font.family: "Serif";
         font.weight: Font.Thin;
         fontSizeMode: Text.Fit;
 
@@ -44,7 +44,7 @@ Item {
 
         horizontalAlignment: Text.AlignRight;
         font.pixelSize: 40;
-        font.family: "San Francisco Display, Segoe UI, Noto Sans";
+        font.family: "Serif";
         font.weight: Font.Thin;
 
         text: new Date().toLocaleString(locale, "dddd, dd/MM");

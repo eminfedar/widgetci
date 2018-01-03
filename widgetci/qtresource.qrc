@@ -13,5 +13,6 @@
         <file>defaultwidgets/Watch/main.qml</file>
         <file>defaultwidgets/Image/main.qml</file>
         <file>defaultwidgets/Image/clock_img.jpg</file>
+        <file>defaultwidgets/Arabic Watch/main.qml</file>
     </qresource>
 </RCC>

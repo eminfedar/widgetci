@@ -1,10 +1,11 @@
-import QtQuick 2.5
-import com.widgetci.file 1.0
+import QtQuick 2.7
+import com.widgetci.file 1.0 //WFile.
 
 Item {
     id: base;
+
     // Required for saving file.
-    property string widgetName: "Note"; // Name of the folder.
+    property string widgetName: "Note"; // Must be Name of the folder & widget.
     property string fileContent: wFile.readFile(widgetName, "notes.txt");
 
     width: 250;
