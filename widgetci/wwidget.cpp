@@ -76,6 +76,84 @@ void WWidget::mouseReleaseEvent(QMouseEvent *event){
     isDragging = false;
 }
 
+void WWidget::toggleZPos(int z_index = 0){
+    this->z_pos = z_index;
+    switch (z_index) {
+    // Normal [0]            -------------
+    case 0:
+        if(this->latestFlags == this->alwaysMostTopFlags){
+            this->destroy();
+            this->create();
+            this->show();
+            this->setFlags(this->normalFlags);
+        }else{
+            this->setFlags((this->flags() ^ this->latestFlags));
+            this->show();
+        }
+
+        this->latestFlags = Q_NULLPTR;
+        break;
+
+        // Always on most top [1] -------------
+    case 1:
+        if(this->latestFlags == this->alwaysMostTopFlags){
+            this->destroy();
+            this->create();
+            this->show();
+            this->setFlags(this->normalFlags | this->alwaysMostTopFlags);
+        }else{
+            this->hide();
+            this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysMostTopFlags);
+            this->show();
+            this->requestActivate();
+        }
+
+        this->latestFlags = this->alwaysMostTopFlags;
+        break;
+
+        // Always on top [2] -------------
+    case 2:
+        if(this->latestFlags == this->alwaysMostTopFlags){
+            this->destroy();
+            this->create();
+            this->show();
+            this->setFlags(this->normalFlags);
+            this->setFlags(this->flags() | this->alwaysTopFlags);
+        }else{
+            this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysTopFlags);
+            this->show();
+        }
+
+        this->latestFlags = this->alwaysTopFlags;
+        break;
+
+        // Always on bottom [3] -------------
+    case 3:
+        if(this->latestFlags == this->alwaysMostTopFlags){
+            this->destroy();
+            this->create();
+            this->show();
+            this->setFlags(this->normalFlags | this->alwaysBottomFlags);
+        }else{
+            this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysBottomFlags);
+            this->show();
+        }
+
+        this->latestFlags = this->alwaysBottomFlags;
+        break;
+    default:
+        break;
+    }
+
+    if(!actionsList.at(z_index)->isChecked())
+        actionsList.at(z_index)->setChecked(true);
+}
+
+void WWidget::toggleLock(bool t_lock){
+    lock = t_lock;
+    act_Lock->setChecked(lock);
+}
+
 void WWidget::addRightClickMenu(){
     // Menu
     menu_rightClick = new QMenu();
@@ -90,101 +168,58 @@ void WWidget::addRightClickMenu(){
     connect(act_Hide, &QAction::triggered, [=]{
         delete this;
     });
+
     // -- Reload
     QAction* act_Reload = new QAction("Reload",this);
     connect(act_Reload, &QAction::triggered, [=]{
         this->reload();
     });
+
     // -- Edit
     QAction* act_Edit = new QAction("Edit",this);
     connect(act_Edit, &QAction::triggered, [=]{
         QDesktopServices::openUrl(fileurl);
     });
+
     // -- {SEPERATOR_AT_HERE} --
-    // -- Always on Most Top
+
+    // -- Always on Most Top [1]
     QAction* act_alwaysOnMostTop = new QAction("Always on Most top",this);
     act_alwaysOnMostTop->setCheckable(true);
     act_alwaysOnMostTop->setActionGroup( actgr_zPositionGroup );
     connect(act_alwaysOnMostTop, &QAction::triggered, [=]{
-        if(act_alwaysOnMostTop->isChecked()){
-            if(this->latestFlags == this->alwaysMostTopFlags){
-                this->destroy();
-                this->create();
-                this->show();
-                this->setFlags(this->normalFlags | this->alwaysMostTopFlags);
-            }else{
-                this->hide();
-                this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysMostTopFlags);
-                this->show();
-                this->requestActivate();
-            }
-
-            this->latestFlags = this->alwaysMostTopFlags;
-        }
+        toggleZPos(1);
     });
-    // -- Always on top
+
+    // -- Always on top [2]
     QAction* act_alwaysOnTop = new QAction("Always on top",this);
     act_alwaysOnTop->setCheckable(true);
     act_alwaysOnTop->setActionGroup( actgr_zPositionGroup );
     connect(act_alwaysOnTop, &QAction::triggered, [=]{
-        if(act_alwaysOnTop->isChecked()){
-            if(this->latestFlags == this->alwaysMostTopFlags){
-                this->destroy();
-                this->create();
-                this->show();
-                this->setFlags(this->normalFlags);
-                this->setFlags(this->flags() | this->alwaysTopFlags);
-            }else{
-                this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysTopFlags);
-                this->show();
-            }
-
-            this->latestFlags = this->alwaysTopFlags;
-        }
+        toggleZPos(2);
     });
-    // -- Normal (DEFAULT)
+
+    // -- Normal (DEFAULT) [0]
     QAction* act_normal = new QAction("Normal",this);
     act_normal->setCheckable(true);
     act_normal->setActionGroup( actgr_zPositionGroup );
-    act_normal->setChecked(true);
     connect(act_normal, &QAction::triggered, [=]{
-        if(this->latestFlags == this->alwaysMostTopFlags){
-            this->destroy();
-            this->create();
-            this->show();
-            this->setFlags(this->normalFlags);
-        }else{
-            this->setFlags((this->flags() ^ this->latestFlags));
-            this->show();
-        }
-
-        this->latestFlags = Q_NULLPTR;
+        toggleZPos(0);
     });
-    // -- Always on bottom
+
+    // -- Always on bottom [3]
     QAction* act_alwaysOnBottom = new QAction("Always on bottom",this);
     act_alwaysOnBottom->setCheckable(true);
     act_alwaysOnBottom->setActionGroup( actgr_zPositionGroup );
     connect(act_alwaysOnBottom, &QAction::triggered, [=]{
-        if(act_alwaysOnBottom->isChecked()){
-            if(this->latestFlags == this->alwaysMostTopFlags){
-                this->destroy();
-                this->create();
-                this->show();
-                this->setFlags(this->normalFlags | this->alwaysBottomFlags);
-            }else{
-                this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysBottomFlags);
-                this->show();
-            }
-
-            this->latestFlags = this->alwaysBottomFlags;
-        }
+        toggleZPos(3);
     });
+
     // -- Lock
-    QAction* act_Lock = new QAction("Lock",this);
+    act_Lock = new QAction("Lock",this);
     act_Lock->setCheckable(true);
     connect(act_Lock, &QAction::triggered, [=]{
-        lock = !lock;
-        act_Lock->setChecked(lock);
+        toggleLock(!lock);
     });
 
 
@@ -203,5 +238,14 @@ void WWidget::addRightClickMenu(){
     menu_rightClick->addSeparator();
     menu_rightClick->addAction(act_Lock);
 
+
+
+    // Adding actions to list.
+    actionsList.append(act_normal);
+    actionsList.append(act_alwaysOnMostTop);
+    actionsList.append(act_alwaysOnTop);
+    actionsList.append(act_alwaysOnBottom);
 }
+
+
 

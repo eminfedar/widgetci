@@ -61,15 +61,20 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1
     // If widget not exists. Create one.
     if(!map_widgetList.contains(wid_filename)){
 
+        // Load configs about the widget
+        QMap<QString, QVariant> widConf = getWidgetSettings(item->text(0));
+
         //Check if has spesific coordinates
         if(wx == -1000 || wy == -1000){
-            QMap<QString, QVariant> widConf = getWidgetSettings(item->text(0));
             wx = widConf["x"].toInt();
             wy = widConf["y"].toInt();
         }
 
         // Add the widget
         WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + wid_filename + "/main.qml"), wid_filename, wx, wy);
+        wid->toggleZPos(widConf["z-pos"].toInt());
+        wid->toggleLock(widConf["lock"].toBool());
+
 
         // Check for errors. (File not found etc...)
         if( wid->status() == QQuickView::Error ){
@@ -127,9 +132,11 @@ QMap<QString, QVariant> mainWindow::getWidgetSettings(QString widgetname){
     QMap<QString, QVariant> mapTmp;
 
     widgetsDataSettings->beginGroup(widgetname);
-    mapTmp["x"] = widgetsDataSettings->value("x", -1000).toInt();
-    mapTmp["y"] = widgetsDataSettings->value("y", -1000).toInt();
-    mapTmp["visible"] = widgetsDataSettings->value("visible", false).toBool();
+    mapTmp["x"] = widgetsDataSettings->value("x", -1000);
+    mapTmp["y"] = widgetsDataSettings->value("y", -1000);
+    mapTmp["visible"] = widgetsDataSettings->value("visible", false);
+    mapTmp["z-pos"] = widgetsDataSettings->value("z-pos", 0);
+    mapTmp["lock"] = widgetsDataSettings->value("lock", false);
     widgetsDataSettings->endGroup();
 
     return mapTmp;
@@ -140,15 +147,23 @@ void mainWindow::saveWidgetSettings(QString widgetname){
     widgetsDataSettings->setValue("x", map_widgetList[widgetname]->x());
     widgetsDataSettings->setValue("y", map_widgetList[widgetname]->y());
     widgetsDataSettings->setValue("visible", map_widgetList[widgetname]->isVisible());
+    widgetsDataSettings->setValue("z-pos", map_widgetList[widgetname]->z_pos);
+    widgetsDataSettings->setValue("lock", map_widgetList[widgetname]->lock);
     widgetsDataSettings->endGroup();
     widgetsDataSettings->sync();
 }
 
 void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
+    QMap<QString, WWidget *> tmpWidgetsMap(map_widgetList);
     widgetList_obj->clear();
 
     QDir dir(widgetsDir);
     QStringList folderList = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    // Close all widgets (to open just available ones later)
+    for(QString e : map_widgetList.keys()){
+        delete map_widgetList.value(e);
+    }
 
     // Add folders one by one
     for(int i=0; i<folderList.length(); i++){
@@ -158,11 +173,13 @@ void mainWindow::updateWidgetList(QTreeWidget* widgetList_obj){
         item->setText(0, folder);
         item->setIcon(0, ico_toggleoff);
 
-        if(map_widgetList.contains(folder))
+        if(tmpWidgetsMap.contains(folder)){
             toggleWidget(folder);
+            //item->setIcon(0, ico_toggleon);
+        }
     }
 
-    // Enable|Disable widgets by double clicking on them
+    // Enable|Disable widgets by double clicking on themauto
     disconnect(widgetList_obj, &QTreeWidget::itemActivated, 0, 0); // prevent multiple connections & runs
     connect(widgetList_obj, &QTreeWidget::itemActivated, [=](QTreeWidgetItem* item) {
         toggleWidget(item);
