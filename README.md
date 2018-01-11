@@ -23,4 +23,25 @@ Item {
     }
 }
 ```
+For more, visit the Wiki =>> [Creating a widget](#wikilinknotready)
 
+### How to build from source code (Linux) ###
+---
+Download the project:
+```
+git clone https://github.com/eminfedar/widgetci.git
+```
+
+#### Building: ####
+Requirements:
+**- Qt 5.7.1** (or >=)
+**- QtCreator** *(optional, you can build it from qtcreator just by opening the project on it and building it)*
+
+#### Building WITHOUT QtCreator: ####
+```
+cd widgetci/widgetci/ #path of .pro file
+mkdir buildFolder
+cd buildFolder
+qmake ../
+make
+```
