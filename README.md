@@ -23,7 +23,7 @@ Item {
     }
 }
 ```
-For more, visit the Wiki =>> [Creating a widget](#wikilinknotready)
+For more, visit the Wiki =>> [How to Create a Widget](https://github.com/eminfedar/widgetci/wiki/How-to-create-a-widget)
 
 ### How to build from source code (Linux) ###
 ---
@@ -45,3 +45,6 @@ cd buildFolder
 qmake ../
 make
 ```
+
+#### Run:
+`./widgetci`
