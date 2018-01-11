@@ -7,9 +7,10 @@
     - @eminfedar
 */
 
-import QtQuick 2.7
+import QtQuick 2.5
 
 Item {
+    id:base;
     width: (timeText.width > dateText.width ? timeText.width : dateText.width);
     height: dateText.height + 130;
 
@@ -21,6 +22,7 @@ Item {
         onTriggered: {
             intervalMs = 60000; // Did this because of precise reloading when the time arrived.
             timeText.text = new Date().toLocaleString(locale, "HH:mm");
+            base.width = (timeText.width > dateText.width ? timeText.width : dateText.width);
         }
     }
     Text{

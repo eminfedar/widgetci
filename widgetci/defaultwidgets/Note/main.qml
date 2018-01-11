@@ -1,4 +1,4 @@
-import QtQuick 2.7
+import QtQuick 2.5
 import com.widgetci.file 1.0 //WFile.
 
 Item {

@@ -4,7 +4,7 @@
 
 // If you want a background has color, you can use Rectangle and set it's color property.
 /* FOR INFO ABOUT ALL OF THINGS YOU CAN DO AND QML API DOCUMENT : http://doc.qt.io/qt-5/qmltypes.html */
-import QtQuick 2.7
+import QtQuick 2.5
 
 Item {
     width: 300
