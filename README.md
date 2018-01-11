@@ -34,12 +34,12 @@ git clone https://github.com/eminfedar/widgetci.git
 
 #### Building: ####
 Requirements:
-**- Qt 5.7.1** (or >=)
-**- QtCreator** *(optional, you can build it from qtcreator just by opening the project on it and building it)*
+- **Qt 5.7.1** (or >=)
+- **QtCreator** *(optional, you can build it from qtcreator just by opening the project on it and building it)*
 
 #### Building WITHOUT QtCreator: ####
 ```
-cd widgetci/widgetci/ #path of .pro file
+cd widgetci/widgetci/ #path of the .pro file
 mkdir buildFolder
 cd buildFolder
 qmake ../
