@@ -2,6 +2,7 @@
 #include "runguard.h"
 #include <QApplication>
 #include <QTranslator>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
     QString langStr = QLocale::system().languageToString(QLocale::system().language());
 
     if(lang != "en"){
-        if(translator.load(":/translations/widgetci_" + lang)){
+        if(translator.load(":/translations/translations/widgetci_" + lang)){
             app.installTranslator(&translator);
         }else{
             qDebug() << "There is no available translations for your language.";
