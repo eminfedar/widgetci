@@ -164,19 +164,19 @@ void WWidget::addRightClickMenu(){
 
     // MENU ACTIONS -->>
     // -- Hide
-    QAction* act_Hide = new QAction("Hide",this);
+    QAction* act_Hide = new QAction(tr("Hide"),this);
     connect(act_Hide, &QAction::triggered, [=]{
         delete this;
     });
 
     // -- Reload
-    QAction* act_Reload = new QAction("Reload",this);
+    QAction* act_Reload = new QAction(tr("Reload"),this);
     connect(act_Reload, &QAction::triggered, [=]{
         this->reload();
     });
 
     // -- Edit
-    QAction* act_Edit = new QAction("Edit",this);
+    QAction* act_Edit = new QAction(tr("Edit"),this);
     connect(act_Edit, &QAction::triggered, [=]{
         QDesktopServices::openUrl(fileurl);
     });
@@ -184,7 +184,7 @@ void WWidget::addRightClickMenu(){
     // -- {SEPERATOR_AT_HERE} --
 
     // -- Always on Most Top [1]
-    QAction* act_alwaysOnMostTop = new QAction("Always on Most top",this);
+    QAction* act_alwaysOnMostTop = new QAction(tr("Always on Most top"),this);
     act_alwaysOnMostTop->setCheckable(true);
     act_alwaysOnMostTop->setActionGroup( actgr_zPositionGroup );
     connect(act_alwaysOnMostTop, &QAction::triggered, [=]{
@@ -192,7 +192,7 @@ void WWidget::addRightClickMenu(){
     });
 
     // -- Always on top [2]
-    QAction* act_alwaysOnTop = new QAction("Always on top",this);
+    QAction* act_alwaysOnTop = new QAction(tr("Always on top"),this);
     act_alwaysOnTop->setCheckable(true);
     act_alwaysOnTop->setActionGroup( actgr_zPositionGroup );
     connect(act_alwaysOnTop, &QAction::triggered, [=]{
@@ -200,7 +200,7 @@ void WWidget::addRightClickMenu(){
     });
 
     // -- Normal (DEFAULT) [0]
-    QAction* act_normal = new QAction("Normal",this);
+    QAction* act_normal = new QAction(tr("Normal"),this);
     act_normal->setCheckable(true);
     act_normal->setActionGroup( actgr_zPositionGroup );
     connect(act_normal, &QAction::triggered, [=]{
@@ -208,7 +208,7 @@ void WWidget::addRightClickMenu(){
     });
 
     // -- Always on bottom [3]
-    QAction* act_alwaysOnBottom = new QAction("Always on bottom",this);
+    QAction* act_alwaysOnBottom = new QAction(tr("Always on bottom"),this);
     act_alwaysOnBottom->setCheckable(true);
     act_alwaysOnBottom->setActionGroup( actgr_zPositionGroup );
     connect(act_alwaysOnBottom, &QAction::triggered, [=]{
@@ -216,7 +216,7 @@ void WWidget::addRightClickMenu(){
     });
 
     // -- Lock
-    act_Lock = new QAction("Lock",this);
+    act_Lock = new QAction(tr("Lock"),this);
     act_Lock->setCheckable(true);
     connect(act_Lock, &QAction::triggered, [=]{
         toggleLock(!lock);
@@ -230,7 +230,7 @@ void WWidget::addRightClickMenu(){
     menu_rightClick->addAction(act_Reload);
     menu_rightClick->addAction(act_Edit);
     menu_rightClick->addSeparator();
-    QMenu* submenu_zindex = menu_rightClick->addMenu("Z-Position");
+    QMenu* submenu_zindex = menu_rightClick->addMenu(tr("Z-Position"));
         submenu_zindex->addAction(act_alwaysOnMostTop);
         submenu_zindex->addAction(act_alwaysOnTop);
         submenu_zindex->addAction(act_normal);

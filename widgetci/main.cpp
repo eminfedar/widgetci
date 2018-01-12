@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "runguard.h"
 #include <QApplication>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +10,7 @@ int main(int argc, char *argv[])
     if ( !guard.tryToRun() ) return 0;
 
     // Define the application
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
 
     // App configs
@@ -59,13 +60,27 @@ int main(int argc, char *argv[])
                     "}"
                     ""
                     );
-        a.setStyleSheet(style);
+        app.setStyleSheet(style);
     #endif
 
+    // CHECK IF TRANSLATION AVAILABLE
+    QTranslator translator;
+    QString lang = QLocale::system().name().left(2);
+    QString langStr = QLocale::system().languageToString(QLocale::system().language());
+
+    if(lang != "en"){
+        if(translator.load(":/translations/widgetci_" + lang)){
+            app.installTranslator(&translator);
+        }else{
+            qDebug() << "There is no available translations for your language.";
+            qDebug() << "You can translate this program to " << langStr << " VISIT ==> https://github.com/eminfedar/widgetci/tree/master/widgetci/translations";
+        }
+    }
+
     // Define the window
-    mainWindow w;
+    mainWindow window;
     //w.show(); // not show if has opened widgets. but if hasn't, inside the constructor, widgetManager will be shown.
 
-    // Start the app
-    return a.exec();
+    // Start the app loop
+    return app.exec();
 }

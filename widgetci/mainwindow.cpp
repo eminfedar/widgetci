@@ -83,13 +83,13 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1
             for (int i = 0; i < wid->errors().length(); ++i) {
                 errorString.append(wid->errors().at(i).toString());
             }
-            errorString.append("\n\nPlease try to fix the error and refresh the list.");
+            errorString.append(tr("\n\nPlease try to fix the error and refresh the list"));
 
             item->setBackground(0, QBrush(QColor(160,0,0,255)));
             item->setTextColor(0, QColor(180, 180, 180, 255));
             item->setSelected(false);
 
-            QMessageBox::warning(this, "An error occured", errorString, QMessageBox::Ok);
+            QMessageBox::warning(this, tr("An error occured"), errorString, QMessageBox::Ok);
             return;
         }else if(wid->status() == QQuickView::Ready){
             item->setBackground(0, QBrush(QColor(0,0,0,0)));
@@ -209,48 +209,48 @@ void mainWindow::addTreeRightClickMenu(){
     menu_wlRightClick = new QMenu(this);
 
     // Right Click Menu Actions
-    QAction* act_wlrc_ShowHide = new QAction("Show", this);
+    QAction* act_wlrc_ShowHide = new QAction(tr("Show"), this);
     connect(act_wlrc_ShowHide, &QAction::triggered, [=]{
         // Show/Hide Action
         toggleWidget(obj_widgetList->currentItem());
     });
-    QAction* act_wlrc_Edit = new QAction("Edit", this);
+    QAction* act_wlrc_Edit = new QAction(tr("Edit"), this);
     connect(act_wlrc_Edit, &QAction::triggered, [=]{
         // Edit the widget file with default editor
         QDesktopServices::openUrl(QUrl::fromLocalFile(widgetsDir + "/" + obj_widgetList->currentItem()->text(0) + "/main.qml"));
     });
-    QAction* act_wlrc_Reload = new QAction("Reload", this);
+    QAction* act_wlrc_Reload = new QAction(tr("Reload"), this);
     connect(act_wlrc_Reload, &QAction::triggered, [=]{
         // Reload the widget
         if(map_widgetList.contains(obj_widgetList->currentItem()->text(0)))
             map_widgetList.value(obj_widgetList->currentItem()->text(0))->reload();
     });
-    QAction* act_wlrc_RefreshTheList = new QAction("Refresh the list", this);
+    QAction* act_wlrc_RefreshTheList = new QAction(tr("Refresh the list"), this);
     connect(act_wlrc_RefreshTheList, &QAction::triggered, [=]{
         // Refresh all the list.
         updateWidgetList(obj_widgetList);
     });
-    QAction* act_wlrc_Delete = new QAction("Remove", this);
+    QAction* act_wlrc_Delete = new QAction(tr("Remove"), this);
     connect(act_wlrc_Delete, &QAction::triggered, [=]{
         if(map_widgetList.contains(obj_widgetList->currentItem()->text(0)))
             toggleWidget(obj_widgetList->currentItem()->text(0));
         delete obj_widgetList->currentItem();
         obj_widgetList->clearSelection();
     });
-    QAction* act_wlrc_DeleteDisk = new QAction("Delete From Disk...", this);
+    QAction* act_wlrc_DeleteDisk = new QAction(tr("Delete From Disk..."), this);
     connect(act_wlrc_DeleteDisk, &QAction::triggered, [=]{
-        int answer = QMessageBox::warning(this, "Warning", "The '"+ obj_widgetList->currentItem()->text(0) +"' folder will be deleted from disk.\n\nAre you sure?", QMessageBox::Cancel | QMessageBox::Ok);
+        int answer = QMessageBox::warning(this, tr("Warning"), tr("The '%1' folder will be deleted from disk.\n\nAre you sure?").arg(obj_widgetList->currentItem()->text(0)), QMessageBox::Cancel | QMessageBox::Ok);
         if(answer == QMessageBox::Ok){
             QDir folder(widgetsDir + "/" + obj_widgetList->currentItem()->text(0));
             if(folder.removeRecursively()){
-                QMessageBox::information(this, "Information", "The folder has been deleted successfully.", QMessageBox::Ok);
+                QMessageBox::information(this, tr("Information"), tr("The folder has been deleted successfully."), QMessageBox::Ok);
                 if(map_widgetList.contains(obj_widgetList->currentItem()->text(0))){
                     toggleWidget(obj_widgetList->currentItem()->text(0));
                     updateWidgetList(obj_widgetList);
                 }
 
             }else{
-                QMessageBox::critical(this, "Information", "The folder couldn't be removed.\nCheck the folder and the files may be using by another program.", QMessageBox::Ok);
+                QMessageBox::critical(this, tr("Information"), tr("The folder couldn't be removed.\nCheck the folder and the files may be using by another program."), QMessageBox::Ok);
             }
 
 
@@ -276,10 +276,10 @@ void mainWindow::addTreeRightClickMenu(){
         QTreeWidgetItem *item = obj_widgetList->currentItem();
         QString wid_filename = item->text(0);
         if(!map_widgetList.contains(wid_filename)){
-            act_wlrc_ShowHide->setText("Show");
+            act_wlrc_ShowHide->setText(tr("Show"));
             act_wlrc_Reload->setEnabled(false);
         }else if(map_widgetList.contains(wid_filename)){
-            act_wlrc_ShowHide->setText("Hide");
+            act_wlrc_ShowHide->setText(tr("Hide"));
             act_wlrc_Reload->setEnabled(true);
         }
 
@@ -290,9 +290,9 @@ void mainWindow::addTreeRightClickMenu(){
 void mainWindow::addActionsToTray(){
     // Create Menu & Items
     trayMenu = new QMenu(this);
-    QAction* openManager = new QAction("Open Manager...", this);
-    QAction* reloadAll = new QAction("Reload All", this);
-    QAction* quit = new QAction("Quit", this);
+    QAction* openManager = new QAction(tr("Open Manager..."), this);
+    QAction* reloadAll = new QAction(tr("Reload All"), this);
+    QAction* quit = new QAction(tr("Quit"), this);
 
     trayMenu->addAction(openManager);
     trayMenu->addAction(reloadAll);
@@ -303,7 +303,6 @@ void mainWindow::addActionsToTray(){
 
     // Connect
     connect(openManager, &QAction::triggered, [=]{
-        qDebug() << "show Manager";
         this->setVisible(true);
         this->raise();
         QApplication::setActiveWindow(this);
@@ -335,7 +334,6 @@ void mainWindow::addTrayIcon(){
     trayIcon->show();
     connect(trayIcon, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason){
         if(reason == QSystemTrayIcon::DoubleClick){
-            qDebug() << "DoubleClick ShowManager";
             this->setVisible(true);
             this->raise();
             QApplication::setActiveWindow(this);
