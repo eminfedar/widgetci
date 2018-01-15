@@ -3,6 +3,7 @@
 #include <QQuickView>
 #include <QObject>
 #include <QMenu>
+#include <QSettings>
 
 class WWidget : public QQuickView
 {
@@ -27,6 +28,10 @@ public:
     void toggleZPos(int z_index); // Toggle between z positions.
     void toggleLock(bool t_lock); // Toggle the lock
     QAction* act_Lock;
+    QSettings* widgetSettings;
+
+    void saveSettings();
+
 private:
     // Window Dragging.
     bool isDragging = false;
@@ -44,11 +49,16 @@ private:
     Qt::WindowFlags latestFlags; // For storing the latest change of flags
     QVector<QAction*> actionsList;
 
+
+
 protected:
     // Window Dragging & Right Click
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
+
+    void focusOutEvent(QFocusEvent* event) override;
+
 };
 
 #endif // WWIDGET_H

@@ -74,6 +74,7 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1
         WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + wid_filename + "/main.qml"), wid_filename, wx, wy);
         wid->toggleZPos(widConf["z-pos"].toInt());
         wid->toggleLock(widConf["lock"].toBool());
+        wid->widgetSettings = widgetsDataSettings;
 
 
         // Check for errors. (File not found etc...)

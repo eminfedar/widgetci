@@ -76,6 +76,22 @@ void WWidget::mouseReleaseEvent(QMouseEvent *event){
     isDragging = false;
 }
 
+void WWidget::focusOutEvent(QFocusEvent *event){
+    Q_UNUSED(event);
+    saveSettings();
+}
+
+void WWidget::saveSettings(){
+    widgetSettings->beginGroup(filename);
+    widgetSettings->setValue("x", this->x());
+    widgetSettings->setValue("y", this->y());
+    widgetSettings->setValue("visible", this->isVisible());
+    widgetSettings->setValue("z-pos", this->z_pos);
+    widgetSettings->setValue("lock", this->lock);
+    widgetSettings->endGroup();
+    widgetSettings->sync();
+}
+
 void WWidget::toggleZPos(int z_index = 0){
     this->z_pos = z_index;
     switch (z_index) {
