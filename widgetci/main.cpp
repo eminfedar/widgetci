@@ -20,49 +20,48 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Widgetci");
 
     // STYLING.
-    #ifdef Q_OS_LINUX || Q_OS_UNIX
-        // because in Windows, it's not looking like supposed to be.
-        // later can be fixed.
-        QString style(
-                    "QHeaderView::section, QHeaderView::section *{"
-                    "padding: 3px;"
-                    "}"
-                    ""
-                    ""
-                    "QTreeView{ selection-background-color:transparent; }"
-                    "QTreeView::item{"
-                    "margin-left: 0px;"
-                    "padding: 3px;"
-                    "}"
-                    "QTreeView::item:selected, QTreeView::item:pressed{"
-                    "background-color: rgba(0, 150, 0, 80);"
-                    "margin:0px;"
-                    "padding:0px;"
-                    "}"
-                    "QTreeView::branch:selected{"
-                    "background-color: rgba(0, 0, 0, 0);"
-                    "margin:0;"
-                    "padding:0;"
-                    "}"
-                    ""
-                    ""
-                    "QMenu::item:selected{"
-                    "background-color: rgb(0, 150, 0);"
-                    "}"
-                    ""
-                    "QMenu::item:disabled{"
-                    "color: #BBBBBB;"
-                    "background-color: #393939;"
-                    "}"
-                    ""
-                    "*{"
-                    "background: #292929;"
-                    "color: #FFFFFF;"
-                    "}"
-                    ""
-                    );
-        app.setStyleSheet(style);
-    #endif
+    QString style(
+                "QHeaderView::section, QHeaderView::section *{"
+                "background: #292929;"
+                "padding: 3px;"
+                "border: 1px solid #202020;"
+                "}"
+                ""
+                ""
+                "QTreeView{ selection-background-color:transparent; border: 1px solid #202020; }"
+                "QTreeView::item{"
+                "margin-left: 0px;"
+                "padding: 3px;"
+                "}"
+                "QTreeView::item:selected, QTreeView::item:pressed{"
+                "background-color: rgba(0, 150, 0, 80);"
+                "margin:0px;"
+                "padding:0px;"
+                "}"
+                "QTreeView::branch:selected{"
+                "background-color: rgba(0, 0, 0, 0);"
+                "margin:0;"
+                "padding:0;"
+                "}"
+                ""
+                ""
+                "QMenu::item:selected{"
+                "background-color: rgb(0, 150, 0);"
+                "}"
+                ""
+                "QMenu::item:disabled{"
+                "color: #BBBBBB;"
+                "background-color: #393939;"
+                "}"
+                ""
+                "*{"
+                "background: #292929;"
+                "color: #FFFFFF;"
+                "}"
+                ""
+                );
+    app.setStyleSheet(style);
+
 
     // CHECK IF TRANSLATION AVAILABLE
     QTranslator translator;

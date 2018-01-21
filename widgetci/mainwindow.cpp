@@ -192,11 +192,7 @@ void mainWindow::addTreeRightClickMenu(){
     ico_toggleoff = QIcon(":/img/toggleoff.png");
     ico_toggleon = QIcon(":/img/toggleon.png");
     colorOn = QColor(0, 230, 0, 255);
-#ifndef Q_OS_WIN
     colorOff = QColor(255, 255, 255, 255);
-#else
-    colorOff = QColor(0, 0, 0, 255);
-#endif
 
 
     // QTreeWidget list object from ui:
