@@ -21,14 +21,15 @@ int main(int argc, char *argv[])
 
     // STYLING.
     QString style(
-                "QHeaderView::section, QHeaderView::section *{"
-                "background: #292929;"
+                "QHeaderView::section{"
+                "background: #393939;"
                 "padding: 3px;"
-                "border: 1px solid #202020;"
+                "border: none;"
+                "border-bottom: 1px solid #202020;"
                 "}"
                 ""
                 ""
-                "QTreeView{ selection-background-color:transparent; border: 1px solid #202020; }"
+                "QTreeView{ selection-background-color:transparent; border: 1px solid #202020; background: #262626; }"
                 "QTreeView::item{"
                 "margin-left: 0px;"
                 "padding: 3px;"
