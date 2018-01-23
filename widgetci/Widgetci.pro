@@ -23,9 +23,9 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-!win32 {QMAKE_CXXFLAGS += -std=c++11}
+!win32 { QMAKE_CXXFLAGS += -std=c++11 }
 
-CONFIG += static
+win32{ CONFIG += static }
 
 RESOURCES += \
     qtresource.qrc
