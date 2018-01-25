@@ -14,6 +14,7 @@
         <file>defaultwidgets/Image/main.qml</file>
         <file>defaultwidgets/Image/clock_img.jpg</file>
         <file>defaultwidgets/Arabic Watch/main.qml</file>
+        <file>defaultwidgets/SystemInfo/main.qml</file>
     </qresource>
     <qresource prefix="/translations">
         <file>translations/widgetci_tr.ts</file>
