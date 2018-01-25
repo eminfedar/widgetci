@@ -2,7 +2,6 @@
 #define WQMLFILE_H
 
 #include <QObject>
-#include <QQuickItem>
 
 class wqmlfile : public QObject
 {

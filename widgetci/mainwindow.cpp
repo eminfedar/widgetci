@@ -14,6 +14,7 @@
 
 #include <QtQml/qqml.h>
 #include "wqmlfile.h"
+#include "wqmlsystem.h"
 
 mainWindow::mainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::mainWindow){
     ui->setupUi(this);
@@ -33,6 +34,7 @@ mainWindow::~mainWindow()
 
 void mainWindow::addQmlApis(){
     qmlRegisterType<wqmlfile>("com.widgetci.file", 1, 0, "WFile");
+    qmlRegisterType<wqmlsystem>("com.widgetci.system", 1, 0, "WSystem");
 }
 
 void mainWindow::openWidgetsInFile(){

@@ -14,12 +14,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     wwidget.cpp \
     runguard.cpp \
-    wqmlfile.cpp
+    wqmlfile.cpp \
+    wqmlsystem.cpp
 
 HEADERS  += mainwindow.h \
     wwidget.h \
     runguard.h \
     wqmlfile.h \
+    wqmlsystem.h
 
 FORMS    += mainwindow.ui
 

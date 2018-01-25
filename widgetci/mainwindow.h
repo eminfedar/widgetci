@@ -16,7 +16,6 @@
 namespace Ui {
     class mainWindow;
     class WWidget;
-    class wqmlfile;
 }
 
 // MAIN MANAGER WINDOWS
