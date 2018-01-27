@@ -100,8 +100,8 @@ void WWidget::toggleZPos(int z_index = 0){
         if(this->latestFlags == this->alwaysMostTopFlags){
             this->destroy();
             this->create();
-            this->show();
             this->setFlags(this->normalFlags);
+            this->show();
         }else{
             this->setFlags((this->flags() ^ this->latestFlags));
             this->show();
@@ -115,8 +115,8 @@ void WWidget::toggleZPos(int z_index = 0){
         if(this->latestFlags == this->alwaysMostTopFlags){
             this->destroy();
             this->create();
-            this->show();
             this->setFlags(this->normalFlags | this->alwaysMostTopFlags);
+            this->show();
         }else{
             this->hide();
             this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysMostTopFlags);
@@ -132,9 +132,9 @@ void WWidget::toggleZPos(int z_index = 0){
         if(this->latestFlags == this->alwaysMostTopFlags){
             this->destroy();
             this->create();
-            this->show();
             this->setFlags(this->normalFlags);
             this->setFlags(this->flags() | this->alwaysTopFlags);
+            this->show();
         }else{
             this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysTopFlags);
             this->show();
@@ -148,8 +148,8 @@ void WWidget::toggleZPos(int z_index = 0){
         if(this->latestFlags == this->alwaysMostTopFlags){
             this->destroy();
             this->create();
-            this->show();
             this->setFlags(this->normalFlags | this->alwaysBottomFlags);
+            this->show();
         }else{
             this->setFlags((this->flags() ^ this->latestFlags) | this->alwaysBottomFlags);
             this->show();

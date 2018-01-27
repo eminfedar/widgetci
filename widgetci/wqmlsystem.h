@@ -25,14 +25,50 @@ public:
 
 public slots:
     // CPU
+    QString getCPUName() const; // CPU Name
     QList<int> getCPUCoresUsages() const; // Usage percents by core numbers
     int getCPUUsage() const; // Usage percent main CPU
-    QString getCPUName() const; // CPU Name
     QList<int> getCPUCurrentClockSpeeds() const; // CPU Current Clock Speeds (Hz)
 
-    int getGPU();
+    // GPU
+    QString getNvidiaGPUName() const; // GPU Name
+    QString getIntelGPUName() const;
+    QString getAMDGPUName() const;
+
+    int getNvidiaGPUUsage() const; // GPU Usage percent (%)
+    int getIntelGPUUsage() const;
+    int getAMDGPUUsage() const;
+
+    int getNvidiaGPUMemoryUsage() const; // GPU RAM Usage percent (MB)
+    int getIntelGPUMemoryUsage() const;
+    int getAMDGPUMemoryUsage() const;
+
+    int getNvidiaGPUCurrentClockSpeed() const; // GPU Clock Speeds (MHz)
+    int getIntelGPUCurrentClockSpeed() const;
+    int getAMDGPUCurrentClockSpeed() const;
+
+    int getNvidiaGPUCurrentMemorySpeed() const; // GPU Memory Clock Speeds (MHz)
+    int getIntelGPUCurrentMemorySpeed() const;
+    int getAMDGPUCurrentMemorySpeed() const;
+
+    int getNvidiaGPUFanSpeed() const; // Fan Speed (RPM)
+    int getAMDGPUFanSpeed() const;
+
+    int getNvidiaGPUTemperature() const; // Temperature (Celcius)
+    int getIntelGPUTemperature() const;
+    int getAMDGPUTemperature() const;
+
+    int getNvidiaGPUPowerDraw() const; // Power Draw (Watts)
+    int getIntelGPUPowerDraw() const;
+    int getAMDGPUPowerDraw() const;
+
+    // STORAGE
     int getStorage();
+
+    // NETWORK
     int getNetwork();
+
+    // PROCESS LIST
     int getProcessList(const int count);
 };
 
