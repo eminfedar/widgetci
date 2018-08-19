@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     // App configs
     QCoreApplication::setOrganizationName("Widgetci");
-    QCoreApplication::setOrganizationDomain("widgetci.org");
+    QCoreApplication::setOrganizationDomain("widgetci.com");
     QCoreApplication::setApplicationName("Widgetci");
 
     // STYLING.

@@ -10,86 +10,67 @@
 import QtQuick 2.5
 
 Item {
-    id: base;
+    id: base
     width: 200
-    height: 200*9/16;
+    height: 200*9/16
 
-    /*property bool imgExpanded: false;
+    // Image source
+    property var imageSource: "clock_img.jpg"
 
-    // Expanding when double click
-    SmoothedAnimation {
-        id: widthAnim;
-        targets: [img1, base]
-        properties: "width";
-        duration: 300
-        from: 200;
-        to: 600;
-        easing.type: Easing.InOutQuad;
-    }
-    SmoothedAnimation {
-        id: heightAnim;
-        targets: [img1, base]
-        properties: "height";
-        duration: 300
-        from: 200*9/16;
-        to: 600*9/16;
-        easing.type: Easing.InOutQuad;
-    }
-
-    // De-Expanding
-    SmoothedAnimation {
-        id: widthAnimRev;
-        targets: [img1, base]
-        properties: "width";
-        duration: 300
-        from: 600;
-        to: 200;
-        easing.type: Easing.InOutQuad;
-    }
-    SmoothedAnimation {
-        id: heightAnimRev;
-        targets: [img1, base]
-        properties: "height";
-        duration: 300
-        from: 600*9/16;
-        to: 200*9/16;
-        easing.type: Easing.InOutQuad;
-    } */
+    // Prevents from dragging.
+    property bool locked: false
 
     // Image Example
-    Image { // AnimatedImage for gifs.
-        id: img1;
-        width: 200;
-        height: 200*9/16;
-        source: "clock_img.jpg";
-        opacity: 0.5;
+    Image {
+        id: img1
+        anchors.fill: parent
+        source: imageSource
+        opacity: 0.5
 
         MouseArea{
-            id: img1_ma;
-            anchors.fill: parent;
-            hoverEnabled: true;
-            /*onDoubleClicked: {
-                if(!imgExpanded){
-                    widthAnim.start();
-                    heightAnim.start();
-                }else{;
-                    widthAnimRev.start();
-                    heightAnimRev.start();
-                }
-
-                imgExpanded = !imgExpanded;
-            }*/
+            id: img1_ma
+            anchors.fill: parent
+            hoverEnabled: true
             onDoubleClicked: {
-                Qt.openUrlExternally(img1.source.toString());
+                Qt.openUrlExternally(img1.source.toString())
             }
 
             onEntered: {
-                img1.opacity = 1;
-                img1_ma.cursorShape = Qt.PointingHandCursor;
+                base.opacity = 1;
+                img1_ma.cursorShape = Qt.PointingHandCursor
             }
             onExited: {
-                img1.opacity = 0.5;
-                //img1_ma.cursorShape = Qt.ArrowCursor;
+                base.opacity = 0.5
+            }
+        }
+    }
+
+    property var rPoint: "0,0"
+    Image {
+        id: resizer
+        x: base.width - 16
+        y: base.height - 16
+        width: 16
+        height: 16
+        source: "resizer.png"
+
+        MouseArea{
+            id: resizer_ma
+            anchors.fill: parent
+            hoverEnabled: true
+            onPressed: {
+                rPoint = Qt.point(mouse.x, mouse.y)
+                locked = true
+            }
+            onPositionChanged: {
+                if(locked){
+                    var delta = Qt.point(mouse.x - rPoint.x, mouse.y - rPoint.y)
+                    base.width += delta.x
+                    base.height += delta.y
+                }
+            }
+            onReleased: {
+                locked = false
             }
         }
     }
