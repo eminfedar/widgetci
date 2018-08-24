@@ -16,9 +16,9 @@ wqmlsystem::wqmlsystem()
     timer->start(100);
 }
 
-////// ---- ### ---- //////
+////// ---- --- ---- //////
 ////// ---- CPU ---- //////
-////// ---- ### ---- //////
+////// ---- --- ---- //////
 void wqmlsystem::updateCPUValues(){
 #ifdef Q_OS_LINUX
     QFile file("/proc/stat");
@@ -123,9 +123,9 @@ QList<int> wqmlsystem::getCPUCurrentClockSpeeds() const{
 }
 
 
-////// ---- ### ---- //////
+////// ---- --- ---- //////
 ////// ---- GPU ---- //////
-////// ---- ### ---- //////
+////// ---- --- ---- //////
 QString wqmlsystem::getNvidiaGPUName() const{
 #ifdef Q_OS_LINUX
     QProcess process;
@@ -348,6 +348,38 @@ int wqmlsystem::getAMDGPUPowerDraw() const{
 }
 
 
+
+////// ---- ------- ---- //////
+////// ---- STORAGE ---- //////
+////// ---- ------- ---- //////
+QList<QMap<QString, int>> wqmlsystem::getStorage(){
+#ifdef Q_OS_LINUX
+    QProcess process;
+    process.start("df --type=ext4 --output=source,size,used,avail,pcent,target --sync -BM");
+    process.waitForFinished(1000);
+
+    QList<QMap<QString, QVariant>> driveList;
+    QMap<QString, QVariant> drive;
+
+    if(process.readAllStandardError().length() > 0){ // If an error occur, -1
+        drive.insert("error", -1);
+        driveList.append(drive);
+        return driveList;
+    }
+
+    QString output = process.readAllStandardOutput();
+    QList<QString> lines = output.split('\n');
+    for (int i = 1; i < lines.length(); ++i) {
+        qDebug() << lines[i];
+    }
+
+    process.kill();
+    return driveList;
+#endif
+}
+
+
+
 int wqmlsystem::getNetwork(){
 
 }
@@ -356,6 +388,3 @@ int wqmlsystem::getProcessList(const int count = -1){
 
 }
 
-int wqmlsystem::getStorage(){
-
-}
