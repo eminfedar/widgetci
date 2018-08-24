@@ -27,6 +27,7 @@ WWidget::WWidget(const QUrl fileurl, const QString filename, const int wx, const
 
     // Show:
     this->show();
+
 }
 
 WWidget::~WWidget(){
@@ -45,7 +46,7 @@ void WWidget::mousePressEvent(QMouseEvent *event){
 
     switch (event->button()) {
     case (Qt::LeftButton): {
-        if(!lock){
+        if(!lock && this->rootObject()->property("locked").toBool() != true){
             isDragging = true;
             dragX = event->x();
             dragY = event->y();
