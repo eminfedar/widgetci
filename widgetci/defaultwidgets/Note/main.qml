@@ -9,8 +9,8 @@ Item {
     // EDITABLES
     property string widgetName: "Note"; // Must be Name of the folder & widget.
     property string fileContent: wFile.readFile(widgetName, "notes.txt");
-    property string contentBackground: "#222"
-    property string contentBackgroundSecondary: "#CCC"
+    property string contentBackground: "#333"
+    property string contentBackgroundChecked: "#222"
 
     property var tabList: getTabList()
     property var contentList: getContentList()
@@ -37,19 +37,13 @@ Item {
     width: 250;
     height: 400;
 
-    Component.onCompleted: {
-        console.log(contentList)
-        console.log(tabList)
-
-        contentRepeater.update()
-    }
-
     TabBar {
         id: tabBar
         width: parent.width
-        height: 32
+        height: 31
         currentIndex: swipeview.currentIndex
-        background: Rectangle { color: "#00000000" }
+        background: Rectangle { color: contentBackground }
+
 
         Repeater{
             model: tabList
@@ -58,12 +52,30 @@ Item {
                 text: modelData
                 width: Math.max(80, tabBar.width/4)
                 height: parent.height
+
                 font.bold: true
+
+                contentItem: Text{
+                    text: parent.text
+                    font: parent.font
+                    color: checked ? "#FFF" : "#999"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
                 background: Rectangle {
-                          implicitWidth: 100
-                          implicitHeight: 40
-                          color: parent.checked ? contentBackgroundSecondary : contentBackground
-                      }
+                    color: parent.checked ? contentBackgroundChecked : contentBackground
+                }
+            }
+        }
+
+        TabButton{
+            text: "+"
+            width: Math.max(80, tabBar.width/4)
+            height: parent.height
+            font.bold: true
+            background: Rectangle {
+                color: parent.checked ? "#DDD" : contentBackground
             }
         }
     }
@@ -81,151 +93,197 @@ Item {
             model: contentList
 
             Item{
+                width: swipeview.width
+                height: swipeview.height
                 Rectangle{
-                    anchors.fill: parent
-                    color:"#202020"
+                    width: swipeview.width
+                    height: swipeview.height
+                    color : "#202020"
+
+
                     TextEdit {
                         text: modelData
                         wrapMode: TextEdit.Wrap;
                         textFormat: TextEdit.PlainText;
 
-                        focus:true;
-                        selectByMouse: true;
-                        selectByKeyboard: true;
-
                         color: "#FFF";
 
                         anchors.fill: parent
-                        anchors.leftMargin: 5
-                        anchors.rightMargin: 5
-                        anchors.topMargin: 5
-                        anchors.bottomMargin: 5
+                        anchors.leftMargin: 7
+                        anchors.rightMargin: 7
+                        anchors.topMargin: 7
+                        anchors.bottomMargin: 7
 
                         MouseArea{
                             anchors.fill: parent
                             onDoubleClicked: {
-                                parent.selectByMouse = true
-                                parent.focus = true
+                                parent.forceActiveFocus()
+                            }
+                        }
+
+                        onActiveFocusChanged: {
+                            if(!activeFocus){
+                                var totalString = ""
+                                for(var i in tabList){
+                                    if(Number(i) === swipeview.currentIndex){
+                                        totalString += tabList[i] + "_%_" + text + "_&_"
+                                        contentList[i] = text
+                                    }
+                                    else
+                                        totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
+                                }
+                                totalString = totalString.slice(0, -3)
+                                wFile.saveFile(widgetName, "notes.txt", totalString);
                             }
                         }
                     }
+
                 }
             }
 
         }
 
-        /* Item {
+        Item {
             id: tab_add
             Button{
+                id: tab_add_button
                 anchors.fill: parent
                 text: "Add a new page"
                 font.bold: true
                 font.pointSize: 14
 
                 onClicked: {
-                    var item = Qt.createQmlObject("import QtQuick 2.5;
-                        Item{
-                            Rectangle{
-                                anchors.fill: parent
-                                color:'#202020'
-                                TextEdit {
-                                    text: 'EDITABLE'
-                                    wrapMode: TextEdit.Wrap;
-                                    textFormat: TextEdit.PlainText;
-
-                                    focus:true;
-                                    selectByMouse: true;
-                                    selectByKeyboard: true;
-
-                                    color: '#FFF';
-
-                                    anchors.fill: parent
-                                    anchors.leftMargin: 5
-                                    anchors.rightMargin: 5
-                                    anchors.topMargin: 5
-                                    anchors.bottomMargin: 5
-                                }
-                            }
-                        }", swipeview, "swipeitem")
-
-                    var bar = Qt.createQmlObject('import QtQuick 2.5;
-                            TabButton{
-                                text: "New Tab"
-                                width: Math.max(80, tabBar.width/4)
-                                height: parent.height
-                                font.bold: true
-                                background: Rectangle {
-                                          implicitWidth: 100
-                                          implicitHeight: 40
-                                          color: parent.checked ? contentBackgroundSecondary : contentBackground
-                                      }
-                            }', tabBar, "baritem")
-                    //swipeview.addItem(item)
-                    //tabBar.addItem(bar)
+                    tab_add_name.visible = true
+                    visible = false
                 }
 
             }
-        }*/
-    }
 
-    /*
+            Rectangle{
+                id: tab_add_name
+                anchors.fill: parent
+                color: "#005500"
+                visible: false
 
-    Rectangle{
-        id: baseRect;
-        width: base.width;
-        height: base.height-10;
-        color: "#F6111111";
-        radius: 12;
-        border.color: "#11FFFFFF";
-        border.width: 1;
-    }
+                TextEdit{
+                    id: tab_add_name_txt
+                    anchors.fill: parent
 
-    FocusScope{
-        id:focusScope;
-        focus:true;
+                    color: "#FFF"
+                    text: "Tab Name Here..."
+                    font.pointSize: 14
+                    font.bold: true
+                    font.underline: true
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
 
-        onActiveFocusChanged: {
-            if(!focusScope.activeFocus){
-                wFile.saveFile(widgetName, "notes.txt", (editorName.text + "%^" + editor.text));
-                baseRect.border.width = 0;
-            }else {
-                baseRect.border.width = 1;
+
+                    Keys.onReturnPressed: {
+                        tab_add_name.visible = false
+                        tab_add_button.visible = true
+
+
+                        var item = Qt.createQmlObject('import QtQuick 2.5;import QtQuick.Controls 2.0;import QtQuick.Layouts 1.1;
+                                    Item{
+                                        width: swipeview.width
+                                        height: swipeview.height
+                                        Rectangle{
+                                            width: swipeview.width
+                                            height: swipeview.height
+                                            color : "#202020"
+
+
+                                            TextEdit {
+                                                text: "Edit here!"
+                                                wrapMode: TextEdit.Wrap;
+                                                textFormat: TextEdit.PlainText;
+
+                                                color: "#FFF";
+
+                                                anchors.fill: parent
+                                                anchors.leftMargin: 5
+                                                anchors.rightMargin: 5
+                                                anchors.topMargin: 5
+                                                anchors.bottomMargin: 5
+
+                                                MouseArea{
+                                                    anchors.fill: parent
+                                                    onDoubleClicked: {
+                                                        parent.forceActiveFocus()
+                                                    }
+                                                }
+
+                                                onActiveFocusChanged: {
+                                                    if(!activeFocus){
+                                                        var totalString = ""
+                                                        for(var i in tabList){
+                                                            if(Number(i) === swipeview.currentIndex){
+                                                                totalString += tabList[i] + "_%_" + text + "_&_"
+                                                                contentList[i] = text
+                                                            }
+                                                            else
+                                                                totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
+                                                        }
+                                                        console.log(text)
+                                                        totalString = totalString.slice(0, -3)
+                                                        console.log(totalString)
+                                                        wFile.saveFile(widgetName, "notes.txt", totalString);
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                 }', swipeview, "swipeitem")
+
+                        var bar = Qt.createQmlObject('import QtQuick 2.5;import QtQuick.Controls 2.0;import QtQuick.Layouts 1.1;
+                                TabButton{
+                                    text: "' + text + '"
+                                    width: Math.max(80, tabBar.width/4)
+                                    height: parent.height
+                                    font.bold: true
+
+                                    contentItem: Text{
+                                        text: parent.text
+                                        font: parent.font
+                                        color: checked ? "#FFF" : "#999"
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    background: Rectangle {
+                                              color: parent.checked ? contentBackgroundChecked : contentBackground
+                                          }
+                                }', tabBar, "baritem")
+
+                        tabBar.moveItem(tabBar.count-1, tabBar.count-2)
+                        swipeview.moveItem(swipeview.count-1, swipeview.count-2)
+                        tabList.push(text)
+                        contentList.push("Edit here!")
+
+                        // Save
+                        saveAll()
+                    }
+
+                    onActiveFocusChanged: {
+                        if(activeFocus){
+                            if(text === "Tab Name Here...")
+                                text = ""
+                        }
+                    }
+                }
             }
-        }
-
-        TextEdit{
-            id: editorName
-            y: 8;
-            width: base.width - 10;
-
-            text: fileContent.split("%^")[0].length > 0 ? fileContent.split("%^")[0] : "#Give a Name#";
-            color: "#F0F0F0";
-
-            font.bold: true;
-
-
-            horizontalAlignment: Text.AlignHCenter;
-        }
-
-        TextEdit{
-            id:editor
-            x: 10;
-            y: 32;
-            width: base.width - 20;
-            height: base.height - 50 + 10;
-
-            wrapMode: TextEdit.Wrap;
-            textFormat: TextEdit.PlainText;
-
-            focus:true;
-            selectByMouse: true;
-            selectByKeyboard: true;
-
-            color: "#FFF";
-            text: fileContent.split("%^")[1] !== undefined ? fileContent.split("%^")[1] : "#Notes here!#";
 
         }
-    } */
+    }
+
+    function saveAll(){
+        var totalString = ""
+        for(var i in tabList)
+            totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
+
+        totalString = totalString.slice(0, -3)
+        wFile.saveFile(widgetName, "notes.txt", totalString);
+    }
 
     // Widgetci's file manager. (for read & write files.) (import com.widgetci.file 1.0)
     WFile{
