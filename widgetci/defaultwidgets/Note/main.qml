@@ -1,19 +1,28 @@
+/*
+    == Widgetci - https://github.com/eminfedar/widgetci ==
+
+    "THIS 'Note' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
+    CAN BE EDITED AND USED FREELY."
+
+    - @eminfedar
+*/
+
 import QtQuick 2.5
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.1
 import com.widgetci.file 1.0 //WFile.
 
 Item {
     id: base;
 
-    // EDITABLES
+    // EDITABLES =====================================================
     property string widgetName: "Note"; // Must be Name of the folder & widget.
     property string fileContent: wFile.readFile(widgetName, "notes.txt");
-    property string contentBackground: "#333"
-    property string contentBackgroundChecked: "#222"
+    property string contentBackground: "#333" // #acea79
+    property string contentBackgroundChecked: "#222" // #e4ea79
+    width: 250;
+    height: 400;
+    // ===============================================================
 
-    property var tabList: getTabList()
-    property var contentList: getContentList()
 
     function getTabList(){
         var pages = fileContent.split("_&_")
@@ -34,31 +43,31 @@ Item {
         return lst
     }
 
-    width: 250;
-    height: 400;
+    property var tabList: getTabList()
+    property var contentList: getContentList()
 
     TabBar {
         id: tabBar
         width: parent.width
         height: 31
-        currentIndex: swipeview.currentIndex
         background: Rectangle { color: contentBackground }
 
+        currentIndex: swipeview.currentIndex
 
         Repeater{
             model: tabList
 
             TabButton{
                 text: modelData
-                width: Math.max(80, tabBar.width/4)
-                height: parent.height
+                width: contentItem.implicitWidth + 21
+                height: tabBar.height
 
                 font.bold: true
 
                 contentItem: Text{
                     text: parent.text
                     font: parent.font
-                    color: checked ? "#FFF" : "#999"
+                    color: checked ? "#FFffffff" : "#77ffffff"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -71,7 +80,7 @@ Item {
 
         TabButton{
             text: "+"
-            width: Math.max(80, tabBar.width/4)
+            width: Math.max(29, tabBar.width/5)
             height: parent.height
             font.bold: true
             background: Rectangle {
@@ -98,7 +107,7 @@ Item {
                 Rectangle{
                     width: swipeview.width
                     height: swipeview.height
-                    color : "#202020"
+                    color : contentBackgroundChecked
 
 
                     TextEdit {
@@ -108,6 +117,9 @@ Item {
 
                         color: "#FFF";
 
+                        selectByKeyboard: true
+                        selectByMouse: true
+
                         anchors.fill: parent
                         anchors.leftMargin: 7
                         anchors.rightMargin: 7
@@ -116,26 +128,54 @@ Item {
 
                         MouseArea{
                             anchors.fill: parent
-                            onDoubleClicked: {
+                            onClicked: {
                                 parent.forceActiveFocus()
                             }
                         }
 
-                        onActiveFocusChanged: {
-                            if(!activeFocus){
-                                var totalString = ""
-                                for(var i in tabList){
-                                    if(Number(i) === swipeview.currentIndex){
-                                        totalString += tabList[i] + "_%_" + text + "_&_"
-                                        contentList[i] = text
-                                    }
-                                    else
-                                        totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
+                        onTextChanged: {
+                            var totalString = ""
+                            for(var i in tabList){
+                                if(Number(i) === swipeview.currentIndex){
+                                    totalString += tabList[i] + "_%_" + text + "_&_"
+                                    contentList[i] = text
                                 }
-                                totalString = totalString.slice(0, -3)
-                                wFile.saveFile(widgetName, "notes.txt", totalString);
+                                else
+                                    totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
                             }
+                            totalString = totalString.slice(0, -3)
+                            wFile.saveFile(widgetName, "notes.txt", totalString);
                         }
+                    }
+
+                    Button{
+                        x: parent.width - 40
+                        y: parent.height - 40
+                        width: 32
+                        height: 32
+                        text: "X"
+
+                        contentItem: Text {
+                            text: parent.text
+                            font.bold: true
+                            color: "#AAA"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        background: Rectangle{
+                            radius: 4
+                            color: parent.pressed ? "#191919" : (parent.hovered ? "#3F3F3F" : contentBackground)
+                        }
+
+                        ToolTip.visible: hovered
+                        ToolTip.text: "Double click to delete the Tab"
+
+                        onDoubleClicked: {
+                            var index = swipeview.currentIndex
+                            deleteTab(index)
+                        }
+
                     }
 
                 }
@@ -162,7 +202,7 @@ Item {
             Rectangle{
                 id: tab_add_name
                 anchors.fill: parent
-                color: "#005500"
+                color: contentBackground
                 visible: false
 
                 TextEdit{
@@ -184,81 +224,113 @@ Item {
 
 
                         var item = Qt.createQmlObject('import QtQuick 2.5;import QtQuick.Controls 2.0;import QtQuick.Layouts 1.1;
-                                    Item{
-                                        width: swipeview.width
-                                        height: swipeview.height
-                                        Rectangle{
-                                            width: swipeview.width
-                                            height: swipeview.height
-                                            color : "#202020"
+                            Item{
+                                width: swipeview.width
+                                height: swipeview.height
+                                Rectangle{
+                                    width: swipeview.width
+                                    height: swipeview.height
+                                    color : contentBackgroundChecked
 
 
-                                            TextEdit {
-                                                text: "Edit here!"
-                                                wrapMode: TextEdit.Wrap;
-                                                textFormat: TextEdit.PlainText;
+                                    TextEdit {
+                                        text: "Edit here!"
+                                        wrapMode: TextEdit.Wrap;
+                                        textFormat: TextEdit.PlainText;
 
-                                                color: "#FFF";
+                                        color: "#FFF";
 
-                                                anchors.fill: parent
-                                                anchors.leftMargin: 5
-                                                anchors.rightMargin: 5
-                                                anchors.topMargin: 5
-                                                anchors.bottomMargin: 5
+                                        selectByKeyboard: true
+                                        selectByMouse: true
 
-                                                MouseArea{
-                                                    anchors.fill: parent
-                                                    onDoubleClicked: {
-                                                        parent.forceActiveFocus()
-                                                    }
-                                                }
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 7
+                                        anchors.rightMargin: 7
+                                        anchors.topMargin: 7
+                                        anchors.bottomMargin: 7
 
-                                                onActiveFocusChanged: {
-                                                    if(!activeFocus){
-                                                        var totalString = ""
-                                                        for(var i in tabList){
-                                                            if(Number(i) === swipeview.currentIndex){
-                                                                totalString += tabList[i] + "_%_" + text + "_&_"
-                                                                contentList[i] = text
-                                                            }
-                                                            else
-                                                                totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
-                                                        }
-                                                        console.log(text)
-                                                        totalString = totalString.slice(0, -3)
-                                                        console.log(totalString)
-                                                        wFile.saveFile(widgetName, "notes.txt", totalString);
-                                                    }
-                                                }
+                                        MouseArea{
+                                            anchors.fill: parent
+                                            onClicked: {
+                                                parent.forceActiveFocus()
                                             }
-
                                         }
-                                 }', swipeview, "swipeitem")
+
+                                        onActiveFocusChanged: {
+                                            if(!activeFocus){
+                                                var totalString = ""
+                                                for(var i in tabList){
+                                                    if(Number(i) === swipeview.currentIndex){
+                                                        totalString += tabList[i] + "_%_" + text + "_&_"
+                                                        contentList[i] = text
+                                                    }
+                                                    else
+                                                        totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
+                                                }
+                                                totalString = totalString.slice(0, -3)
+                                                wFile.saveFile(widgetName, "notes.txt", totalString);
+                                            }
+                                        }
+                                    }
+
+                                    Button{
+                                        x: parent.width - 40
+                                        y: parent.height - 40
+                                        width: 32
+                                        height: 32
+                                        text: "X"
+
+                                        contentItem: Text {
+                                            text: parent.text
+                                            font.bold: true
+                                            color: "#AAA"
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+
+                                        background: Rectangle{
+                                            radius: 4
+                                            color: parent.pressed ? "#191919" : (parent.hovered ? "#3F3F3F" : contentBackground)
+                                        }
+
+                                        ToolTip.visible: hovered
+                                        ToolTip.text: "Double click to delete the Tab"
+
+                                        onDoubleClicked: {
+                                            var index = swipeview.currentIndex
+                                            deleteTab(index)
+                                        }
+
+                                    }
+                                }
+                            }', swipeview)
 
                         var bar = Qt.createQmlObject('import QtQuick 2.5;import QtQuick.Controls 2.0;import QtQuick.Layouts 1.1;
                                 TabButton{
                                     text: "' + text + '"
-                                    width: Math.max(80, tabBar.width/4)
-                                    height: parent.height
+                                    width: contentItem.implicitWidth + 21
+                                    height: tabBar.height
+
                                     font.bold: true
 
                                     contentItem: Text{
                                         text: parent.text
                                         font: parent.font
-                                        color: checked ? "#FFF" : "#999"
+                                        color: checked ? "#FFffffff" : "#77ffffff"
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
                                     }
 
                                     background: Rectangle {
-                                              color: parent.checked ? contentBackgroundChecked : contentBackground
-                                          }
-                                }', tabBar, "baritem")
+                                        color: parent.checked ? contentBackgroundChecked : contentBackground
+                                    }
+                                }', tabBar)
 
                         tabBar.moveItem(tabBar.count-1, tabBar.count-2)
                         swipeview.moveItem(swipeview.count-1, swipeview.count-2)
                         tabList.push(text)
                         contentList.push("Edit here!")
+                        text = "Tab Name Here..."
 
                         // Save
                         saveAll()
@@ -272,8 +344,18 @@ Item {
                     }
                 }
             }
-
         }
+    }
+
+    function deleteTab(index){
+        swipeview.removeItem(index)
+        tabBar.removeItem(index)
+        tabList.splice(index, 1)
+        contentList.splice(index, 1)
+
+        tabBar.incrementCurrentIndex()
+
+        saveAll()
     }
 
     function saveAll(){
@@ -285,7 +367,7 @@ Item {
         wFile.saveFile(widgetName, "notes.txt", totalString);
     }
 
-    // Widgetci's file manager. (for read & write files.) (import com.widgetci.file 1.0)
+    // Widgetci's file manager. (read & write files.) (import com.widgetci.file 1.0)
     WFile{
         id: wFile;
     }

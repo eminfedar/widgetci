@@ -358,8 +358,8 @@ QList<QMap<QString, int>> wqmlsystem::getStorage(){
     process.start("df --type=ext4 --output=source,size,used,avail,pcent,target --sync -BM");
     process.waitForFinished(1000);
 
-    QList<QMap<QString, QVariant>> driveList;
-    QMap<QString, QVariant> drive;
+    QList<QMap<QString, int>> driveList;
+    QMap<QString, int> drive;
 
     if(process.readAllStandardError().length() > 0){ // If an error occur, -1
         drive.insert("error", -1);

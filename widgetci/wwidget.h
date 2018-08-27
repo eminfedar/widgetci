@@ -23,11 +23,8 @@ public:
 
     // Z-Pos & Lock settings
     int z_pos = 0;
-    bool lock = false;
 
     void toggleZPos(int z_index); // Toggle between z positions.
-    void toggleLock(bool t_lock); // Toggle the lock
-    QAction* act_Lock;
     QSettings* widgetSettings;
 
     void saveSettings();
@@ -35,6 +32,9 @@ public:
 private:
     // Window Dragging.
     bool isDragging = false;
+    bool isDragStarted = false;
+    void startMoving();
+    void stopMoving();
     quint16 dragX = 0, dragY = 0;
 
     // Right Click Menu

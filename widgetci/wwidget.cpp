@@ -7,6 +7,7 @@
 #include <QDesktopServices>
 
 
+
 WWidget::WWidget(const QUrl fileurl, const QString filename, const int wx, const int wy):
     QQuickView(fileurl),
     widgetpath(fileurl.toDisplayString()),
@@ -40,19 +41,27 @@ void WWidget::reload(){
     this->setSource(fileurl);
 }
 
+void WWidget::startMoving(){
+    dragX = this->size().width()/2;
+    dragY = this->size().height()/2;
+    setCursor(Qt::SizeAllCursor);
+    isDragging = true;
+}
+
+void WWidget::stopMoving(){
+    isDragging = false;
+    isDragStarted = false;
+    setCursor(Qt::ArrowCursor);
+}
+
 // Drag&Drop the widget:
 void WWidget::mousePressEvent(QMouseEvent *event){
     QQuickView::mousePressEvent(event);
 
+    if(isDragging)
+        stopMoving();
+
     switch (event->button()) {
-    case (Qt::LeftButton): {
-        if(!lock && this->rootObject()->property("locked").toBool() != true){
-            isDragging = true;
-            dragX = event->x();
-            dragY = event->y();
-        }
-        break;
-    }
     case (Qt::RightButton): {
         QPoint pt(event->pos());
         pt.setX(pt.x()+2);
@@ -68,13 +77,14 @@ void WWidget::mousePressEvent(QMouseEvent *event){
 void WWidget::mouseMoveEvent(QMouseEvent *event){
     QQuickView::mouseMoveEvent(event);
 
-    if(isDragging && !lock)
+    if(isDragging)
         this->setPosition(event->globalX() - dragX, event->globalY() - dragY);
 }
 void WWidget::mouseReleaseEvent(QMouseEvent *event){
     QQuickView::mouseReleaseEvent(event);
 
-    isDragging = false;
+    if(isDragging)
+        stopMoving();
 }
 
 void WWidget::focusOutEvent(QFocusEvent *event){
@@ -88,7 +98,6 @@ void WWidget::saveSettings(){
     widgetSettings->setValue("y", this->y());
     widgetSettings->setValue("visible", this->isVisible());
     widgetSettings->setValue("z-pos", this->z_pos);
-    widgetSettings->setValue("lock", this->lock);
     widgetSettings->endGroup();
     widgetSettings->sync();
 }
@@ -166,11 +175,6 @@ void WWidget::toggleZPos(int z_index = 0){
         actionsList.at(z_index)->setChecked(true);
 }
 
-void WWidget::toggleLock(bool t_lock){
-    lock = t_lock;
-    act_Lock->setChecked(lock);
-}
-
 void WWidget::addRightClickMenu(){
     // Menu
     menu_rightClick = new QMenu();
@@ -185,6 +189,14 @@ void WWidget::addRightClickMenu(){
     connect(act_Hide, &QAction::triggered, [=]{
         delete this;
     });
+
+    // -- Move
+    QAction* act_Move = new QAction(tr("Move"),this);
+    connect(act_Move, &QAction::triggered, [=]{
+        startMoving();
+    });
+
+    // -- {SEPERATOR_AT_HERE} --
 
     // -- Reload
     QAction* act_Reload = new QAction(tr("Reload"),this);
@@ -232,17 +244,11 @@ void WWidget::addRightClickMenu(){
         toggleZPos(3);
     });
 
-    // -- Lock
-    act_Lock = new QAction(tr("Lock"),this);
-    act_Lock->setCheckable(true);
-    connect(act_Lock, &QAction::triggered, [=]{
-        toggleLock(!lock);
-    });
-
 
 
     // Adding Sub-Menus & Actions
     menu_rightClick->addAction(act_Hide);
+    menu_rightClick->addAction(act_Move);
     menu_rightClick->addSeparator();
     menu_rightClick->addAction(act_Reload);
     menu_rightClick->addAction(act_Edit);
@@ -252,9 +258,6 @@ void WWidget::addRightClickMenu(){
         submenu_zindex->addAction(act_alwaysOnTop);
         submenu_zindex->addAction(act_normal);
         submenu_zindex->addAction(act_alwaysOnBottom);
-    menu_rightClick->addSeparator();
-    menu_rightClick->addAction(act_Lock);
-
 
 
     // Adding actions to list.

@@ -2,7 +2,7 @@
     == Widgetci - https://github.com/eminfedar/widgetci ==
 
     "THIS 'watch' IS ONE OF THE DEFAULT WIDGETS OF 'WIDGETCI'.
-    CAN BE EDITED AND USED. LICENSED WITH GPL."
+    CAN BE EDITED AND USED FREELY."
 
     - @eminfedar
 */
@@ -30,27 +30,25 @@ Item {
         x: (dateText.width - timeText.width > 0 ? (dateText.width - timeText.width) + 8 : 8);
 
         horizontalAlignment: Text.AlignRight;
-        font.pixelSize: 130;
+        font.pointSize: 72;
         font.family: "San Francisco Display, Segoe UI Light, Noto Sans";
         font.weight: Font.Thin;
 
         text: new Date().toLocaleString(locale, "HH:mm");
         color: "#FFFFFFFF";
-        opacity: 0.9;
     }
 
     Text{
         id:dateText;
         x: (timeText.width - dateText.width > 0 ? (timeText.width - dateText.width) : 0);
-        y:135;
+        y: timeText.height - 14;
 
         horizontalAlignment: Text.AlignRight;
-        font.pixelSize: 40;
+        font.pointSize: 24;
         font.family: "San Francisco Display, Segoe UI Light, Noto Sans";
         font.weight: Font.Thin;
 
         text: new Date().toLocaleString(locale, "dddd, dd/MM");
         color: "#FFFFFFFF";
-        opacity: 0.9;
     }
 }

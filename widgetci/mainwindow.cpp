@@ -75,7 +75,6 @@ void mainWindow::toggleWidget(QTreeWidgetItem *item, int wx = -1000, int wy = -1
         // Add the widget
         WWidget *wid = new WWidget(QUrl::fromLocalFile(widgetsDir + "/" + wid_filename + "/main.qml"), wid_filename, wx, wy);
         wid->toggleZPos(widConf["z-pos"].toInt());
-        wid->toggleLock(widConf["lock"].toBool());
         wid->widgetSettings = widgetsDataSettings;
 
 
@@ -151,7 +150,6 @@ void mainWindow::saveWidgetSettings(QString widgetname){
     widgetsDataSettings->setValue("y", map_widgetList[widgetname]->y());
     widgetsDataSettings->setValue("visible", map_widgetList[widgetname]->isVisible());
     widgetsDataSettings->setValue("z-pos", map_widgetList[widgetname]->z_pos);
-    widgetsDataSettings->setValue("lock", map_widgetList[widgetname]->lock);
     widgetsDataSettings->endGroup();
     widgetsDataSettings->sync();
 }

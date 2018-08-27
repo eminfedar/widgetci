@@ -8,24 +8,28 @@
 */
 
 import QtQuick 2.5
+import com.widgetci.file 1.0
 
 Item {
     id: base
-    width: 200
-    height: 200*9/16
 
     // Image source
-    property var imageSource: "clock_img.jpg"
+    property string imageSource: "clock_img.jpg"
+    property string widgetName: "Image" // Required for saving conf file
 
-    // Prevents from dragging.
-    property bool locked: false
+    property var size: wFile.readFile(widgetName, "image.conf").split("|");
+
+
+    width: size[0]
+    height: size[1]
+
+    property bool isResizing: false
 
     // Image Example
     Image {
         id: img1
         anchors.fill: parent
         source: imageSource
-        opacity: 0.5
 
         MouseArea{
             id: img1_ma
@@ -41,6 +45,10 @@ Item {
             }
             onExited: {
                 base.opacity = 0.5
+            }
+
+            onReleased: {
+                isResizing = false
             }
         }
     }
@@ -60,18 +68,23 @@ Item {
             hoverEnabled: true
             onPressed: {
                 rPoint = Qt.point(mouse.x, mouse.y)
-                locked = true
+                isResizing = true
             }
             onPositionChanged: {
-                if(locked){
+                if(isResizing){
                     var delta = Qt.point(mouse.x - rPoint.x, mouse.y - rPoint.y)
                     base.width += delta.x
                     base.height += delta.y
                 }
             }
-            onReleased: {
-                locked = false
+            onReleased:{
+                isResizing = false
+                wFile.saveFile(widgetName, "image.conf", (base.width + "|" + base.height))
             }
         }
+    }
+
+    WFile{
+        id: wFile
     }
 }
