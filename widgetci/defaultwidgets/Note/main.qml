@@ -353,7 +353,8 @@ Item {
         tabList.splice(index, 1)
         contentList.splice(index, 1)
 
-        tabBar.incrementCurrentIndex()
+        if(tabBar.count > 1 && tabBar.currentIndex < tabBar.count-1)
+            tabBar.incrementCurrentIndex()
 
         saveAll()
     }

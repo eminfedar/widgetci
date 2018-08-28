@@ -19,9 +19,8 @@ Item {
 
     property var size: wFile.readFile(widgetName, "image.conf").split("|");
 
-
-    width: size[0]
-    height: size[1]
+    width: parseInt(size[0])
+    height: parseInt(size[1])
 
     property bool isResizing: false
 
@@ -35,16 +34,12 @@ Item {
             id: img1_ma
             anchors.fill: parent
             hoverEnabled: true
-            onDoubleClicked: {
+            onClicked: {
                 Qt.openUrlExternally(img1.source.toString())
             }
 
             onEntered: {
-                base.opacity = 1;
                 img1_ma.cursorShape = Qt.PointingHandCursor
-            }
-            onExited: {
-                base.opacity = 0.5
             }
 
             onReleased: {

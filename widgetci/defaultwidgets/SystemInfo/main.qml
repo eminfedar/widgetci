@@ -10,28 +10,29 @@ Item {
         id:wSystem
     }
 
+
+
     Timer{
         interval: 750; running: true; repeat: true;
         onTriggered: {
-            cputext.text = "CPU: " + wSystem.getCPUName() +
-                    "\n - Cores: " + wSystem.getCPUUsage() + "% (" + wSystem.getCPUCoresUsages().join("%, ") + "%)" +
-                    "\n - MHz(s): " + wSystem.getCPUCurrentClockSpeeds().join(", ") + "\n" +
-                    "GPU: " + "..." + "\n" +
-                    "Storage: " + "..." + "\n" +
-                    "Network: " + "..." + "\n" +
-                    "Process List: " + "...";
+            if(Qt.platform.os !== "linux" ){
+                cputext.text = "This widget works only on Linux Systems."
+                running = false
+            }else{
+                cputext.text = "CPU: " + wSystem.getCPUName() +
+                        "\n - Cores: " + wSystem.getCPUUsage() + "% (" + wSystem.getCPUCoresUsages().join("%, ") + "%)" +
+                        "\n - MHz(s): " + wSystem.getCPUCurrentClockSpeeds().join(", ") + "\n" +
+                        "GPU: " + "..." + "\n" +
+                        "Storage: " + "..." + "\n" +
+                        "Network: " + "..." + "\n" +
+                        "Process List: " + "...";
+            }
         }
     }
 
     Text{
         id: cputext;
-        text: "CPU: " + wSystem.getCPUName() +
-              "\n - Cores: " + wSystem.getCPUUsage() + "% (" + wSystem.getCPUCoresUsages().join("%, ") + "%)" +
-              "\n - MHz(s): " + wSystem.getCPUCurrentClockSpeeds().join(", ") + "\n" +
-              "GPU: " + "..." + "\n" +
-              "Storage: " + "..." + "\n" +
-              "Network: " + "..." + "\n" +
-              "Process List: " + "...";
+        text: "Getting cpu info..."
         color: "#FFFFFF"
         font.pixelSize: 16
     }
