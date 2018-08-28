@@ -369,7 +369,7 @@ void mainWindow::appConfig(){
                 // Copy the file
                 file.copy( fileSrc , fileTarget );
                 // Set permissions Readable and Writeable.
-                file.setPermissions(fileTarget, QFileDevice::ReadOther | QFileDevice::WriteOther | QFileDevice::ExeGroup);
+                file.setPermissions(fileTarget, QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser | QFileDevice::WriteUser | QFileDevice::ReadGroup | QFileDevice::WriteGroup);
             }
         }
     }
