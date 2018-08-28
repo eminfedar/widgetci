@@ -3,7 +3,7 @@ a Widget Management App can run on Win/Linux/Mac.
 
 Uses **QT5.7.1**'s "**QML** + **Javascript** Engine" for **widgets.**
 
-![Image](https://github.com/eminfedar/widgetci/raw/master/widgetci_1.0.3.png)
+![Image](https://raw.githubusercontent.com/eminfedar/widgetci/dev-unstable/widgetci_1.0.3.png)
 
 ### Simple widget file (.qml):
 ```
