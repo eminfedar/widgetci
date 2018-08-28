@@ -29,7 +29,6 @@ Visit the Wiki =>> [How to Create a Widget](https://github.com/eminfedar/widgetc
 
 
 ### How to build from source code (Linux) ###
----
 Download the project:
 ```
 git clone https://github.com/eminfedar/widgetci.git
