@@ -63,11 +63,17 @@ void wqmlsystem::updateCPUValues(){
         cpu_cores.append(100 * diffRun / diffTotal);
     }
 #endif
+#ifdef Q_OS_WIN
+    return;
+#endif
 }
 
 QList<int> wqmlsystem::getCPUCoresUsages() const{
 #ifdef Q_OS_LINUX
     return cpu_cores;
+#endif
+#ifdef Q_OS_WIN
+    return;
 #endif
 }
 
@@ -79,6 +85,9 @@ int wqmlsystem::getCPUUsage() const{
     }
     totalUsage /= cpu_cores.length();
     return totalUsage;
+#endif
+#ifdef Q_OS_WIN
+    return -1;
 #endif
 }
 
@@ -100,6 +109,9 @@ QString wqmlsystem::getCPUName() const{
 
     return tr("Can't find the CPU Name");
 #endif
+#ifdef Q_OS_WIN
+    return tr("Can't find the CPU Name");
+#endif
 }
 
 QList<int> wqmlsystem::getCPUCurrentClockSpeeds() const{
@@ -119,6 +131,9 @@ QList<int> wqmlsystem::getCPUCurrentClockSpeeds() const{
     }
 
     return coreClocks;
+#endif
+#ifdef Q_OS_WIN
+    return;
 #endif
 }
 
@@ -352,7 +367,7 @@ int wqmlsystem::getAMDGPUPowerDraw() const{
 ////// ---- ------- ---- //////
 ////// ---- STORAGE ---- //////
 ////// ---- ------- ---- //////
-QList<QMap<QString, int>> wqmlsystem::getStorage(){
+/*QList<QMap<QString, int>> wqmlsystem::getStorage(){
 #ifdef Q_OS_LINUX
     QProcess process;
     process.start("df --type=ext4 --output=source,size,used,avail,pcent,target --sync -BM");
@@ -376,7 +391,7 @@ QList<QMap<QString, int>> wqmlsystem::getStorage(){
     process.kill();
     return driveList;
 #endif
-}
+}*/
 
 
 

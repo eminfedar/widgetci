@@ -63,7 +63,7 @@ public slots:
     int getAMDGPUPowerDraw() const;
 
     // STORAGE
-    QList<QMap<QString, int>> getStorage(); // First Dimension is filesystems. (like /dev/sda1, /dev/sda2),
+    //QList<QMap<QString, int>> getStorage(); // First Dimension is filesystems. (like /dev/sda1, /dev/sda2),
     // Second Dimension is informations about the filesystem. ( Total, Used, Empty, Percent, Mounted On )
 
     // NETWORK

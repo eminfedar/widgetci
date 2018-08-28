@@ -56,10 +56,12 @@ void WWidget::stopMoving(){
 
 // Drag&Drop the widget:
 void WWidget::mousePressEvent(QMouseEvent *event){
-    QQuickView::mousePressEvent(event);
-
-    if(isDragging)
+    if(isDragging){
         stopMoving();
+        return;
+    }
+
+    QQuickView::mousePressEvent(event);    
 
     switch (event->button()) {
     case (Qt::RightButton): {
@@ -81,10 +83,12 @@ void WWidget::mouseMoveEvent(QMouseEvent *event){
         this->setPosition(event->globalX() - dragX, event->globalY() - dragY);
 }
 void WWidget::mouseReleaseEvent(QMouseEvent *event){
-    QQuickView::mouseReleaseEvent(event);
-
-    if(isDragging)
+    if(isDragging){
         stopMoving();
+        return;
+    }
+
+    QQuickView::mouseReleaseEvent(event);
 }
 
 void WWidget::focusOutEvent(QFocusEvent *event){

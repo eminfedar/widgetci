@@ -17,6 +17,7 @@
         <file>defaultwidgets/SystemInfo/main.qml</file>
         <file>defaultwidgets/Image/image.conf</file>
         <file>defaultwidgets/Image/resizer.png</file>
+        <file>defaultwidgets/Note/notes.txt</file>
     </qresource>
     <qresource prefix="/translations">
         <file>translations/widgetci_tr.ts</file>
