@@ -35,7 +35,7 @@ Item {
         font.weight: Font.Thin;
 
         text: new Date().toLocaleString(locale, "HH:mm");
-        color: "#FFFFFFFF";
+        color: "#FFFFFF";
     }
 
     Text{
@@ -49,6 +49,6 @@ Item {
         font.weight: Font.Thin;
 
         text: new Date().toLocaleString(locale, "dddd, dd/MM");
-        color: "#FFFFFFFF";
+        color: "#FFFFFF";
     }
 }

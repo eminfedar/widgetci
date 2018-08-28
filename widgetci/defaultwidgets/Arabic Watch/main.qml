@@ -30,13 +30,12 @@ Item {
         x: (dateText.width - timeText.width > 0 ? (dateText.width - timeText.width) + 8 : 8);
 
         horizontalAlignment: Text.AlignRight;
-        font.pixelSize: 130;
+        font.pointSize: 72;
         font.family: "Serif";
         font.weight: Font.Thin;
 
         text: new Date().toLocaleString(locale, "HH:mm");
         color: "#FFFFFF";
-        opacity: 0.9;
     }
 
     Text{
@@ -45,12 +44,11 @@ Item {
         y: 135;
 
         horizontalAlignment: Text.AlignRight;
-        font.pixelSize: 40;
+        font.pointSize: 24;
         font.family: "Serif";
         font.weight: Font.Thin;
 
         text: new Date().toLocaleString(locale, "dddd, dd/MM");
-        color: "#FFFFFFFF";
-        opacity: 0.9;
+        color: "#FFFFFF";
     }
 }
