@@ -362,7 +362,14 @@ void mainWindow::appConfig(){
             QDir filedir(localdir.path() + "/" + folder);
             QStringList filelist = filedir.entryList(QDir::Files | QDir::NoDotAndDotDot);
             for (int a = 0; a < filelist.length(); ++a) {
-                file.copy(localdir.path() + "/" + folder + "/" + filelist.at(a), widgetsDir + "/" + folder + "/" + filelist.at(a));
+
+                QString fileSrc = localdir.path() + "/" + folder + "/" + filelist.at(a);
+                QString fileTarget = widgetsDir + "/" + folder + "/" + filelist.at(a);
+
+                // Copy the file
+                file.copy( fileSrc , fileTarget );
+                // Set permissions Readable and Writeable.
+                file.setPermissions(fileTarget, QFileDevice::ReadOther | QFileDevice::WriteOther | QFileDevice::ExeGroup);
             }
         }
     }
