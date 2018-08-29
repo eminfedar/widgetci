@@ -2,7 +2,6 @@
 #include <QtQml/qqml.h>
 #include <QFile>
 #include <QMap>
-#include <QTextStream>
 #include <QStandardPaths>
 
 wqmlfile::wqmlfile()
@@ -32,8 +31,7 @@ QString wqmlfile::readFile(QString widgetName, QString file) const{
         return tr("ERR: Can't access the file\n(maybe some program using it):") + file;
 
     // Reading.
-    QTextStream in(&fi);
-    QString content = in.readAll();
+    QString content = fi.readAll();
     fi.close();
 
     return content;
@@ -47,9 +45,6 @@ QString wqmlfile::saveFile(QString widgetName, QString file, QString data) const
     if(file.isEmpty() || file.isNull()){
         return tr("ERR: 2nd parameter is empty or null.") + " (file)";
     }
-    if(data.isEmpty() || data.isNull()){
-        return tr("ERR: 3rd parameter is empty or null.") + " (data)";
-    }
 
 
     // Default path for creating file from qml is '%appDataDir%/widgets/%widgetName%'.
@@ -62,8 +57,7 @@ QString wqmlfile::saveFile(QString widgetName, QString file, QString data) const
         return tr("ERR: Can't access the file\n(maybe some program using it):") + file;
 
     // Write the file.
-    QTextStream out(&fi);
-    out << data;
+    fi.write(data.toUtf8());
     fi.close();
 
     return "";
@@ -81,8 +75,7 @@ QString wqmlfile::readFileAnywhere(QString file) const{
         return tr("ERR: Can't access the file\n(maybe some program using it):") + file;
 
     // Reading.
-    QTextStream in(&fi);
-    QString content = in.readAll();
+    QString content = fi.readAll();
     fi.close();
 
     return content;
@@ -93,9 +86,6 @@ QString wqmlfile::saveFileAnywhere(QString file, QString data) const{
     if(file.isEmpty() || file.isNull()){
         return tr("ERR: 1st parameter is empty or null.") + " (file)";
     }
-    if(data.isEmpty() || data.isNull()){
-        return tr("ERR: 2nd parameter is empty or null.") + " (data)";
-    }
 
     // Opening the file
     QFile fi(file);
@@ -103,8 +93,7 @@ QString wqmlfile::saveFileAnywhere(QString file, QString data) const{
         return tr("ERR: Can't access the file\n(maybe some program using it):") + file;
 
     // Write the file.
-    QTextStream out(&fi);
-    out << data;
+    fi.write(data.toUtf8());
     fi.close();
 
     return "";

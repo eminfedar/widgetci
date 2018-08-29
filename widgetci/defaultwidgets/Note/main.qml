@@ -25,18 +25,24 @@ Item {
 
 
     function getTabList(){
-        var pages = fileContent.split("_&_")
         var lst = []
-        for(var i in pages){
+        if(fileContent.length <= 0)
+            return lst
+
+        var pages = fileContent.split("_&_")
+        for(var i=0; i<pages.length; i++){
             var pageArr = pages[i].split("_%_")
             lst.push(String(pageArr[0]))
         }
         return lst
     }
     function getContentList(){
-        var pages = fileContent.split("_&_")
         var lst = []
-        for(var i in pages){
+        if(fileContent.length <= 0)
+            return lst
+
+        var pages = fileContent.split("_&_")
+        for(var i=0; i<pages.length; i++){
             var pageArr = pages[i].split("_%_")
             lst.push(String(pageArr[1]))
         }
@@ -111,6 +117,7 @@ Item {
 
 
                     TextEdit {
+                        objectName: "TE_" + index
                         text: modelData
                         wrapMode: TextEdit.Wrap;
                         textFormat: TextEdit.PlainText;
@@ -134,17 +141,10 @@ Item {
                         }
 
                         onTextChanged: {
-                            var totalString = ""
-                            for(var i in tabList){
-                                if(Number(i) === swipeview.currentIndex){
-                                    totalString += tabList[i] + "_%_" + text + "_&_"
-                                    contentList[i] = text
-                                }
-                                else
-                                    totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
-                            }
-                            totalString = totalString.slice(0, -3)
-                            wFile.saveFile(widgetName, "notes.txt", totalString);
+                            var thisId = Number(objectName.split("_")[1])
+                            contentList[thisId] = text
+
+                            saveAll()
                         }
                     }
 
@@ -153,6 +153,7 @@ Item {
                         y: parent.height - 40
                         width: 32
                         height: 32
+                        font.bold: true
                         text: "X"
 
                         contentItem: Text {
@@ -165,7 +166,7 @@ Item {
 
                         background: Rectangle{
                             radius: 4
-                            color: parent.pressed ? "#191919" : (parent.hovered ? "#3F3F3F" : contentBackground)
+                            color: parent.pressed ? "#191919" : (parent.hovered ? "#444" : contentBackground)
                         }
 
                         ToolTip.visible: hovered
@@ -225,6 +226,7 @@ Item {
 
                         var item = Qt.createQmlObject('import QtQuick 2.5;import QtQuick.Controls 2.0;import QtQuick.Layouts 1.1;
                             Item{
+
                                 width: swipeview.width
                                 height: swipeview.height
                                 Rectangle{
@@ -256,19 +258,11 @@ Item {
                                             }
                                         }
 
-                                        onActiveFocusChanged: {
-                                            if(!activeFocus){
-                                                var totalString = ""
-                                                for(var i in tabList){
-                                                    if(Number(i) === swipeview.currentIndex){
-                                                        totalString += tabList[i] + "_%_" + text + "_&_"
-                                                        contentList[i] = text
-                                                    }
-                                                    else
-                                                        totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
-                                                }
-                                                totalString = totalString.slice(0, -3)
-                                                wFile.saveFile(widgetName, "notes.txt", totalString);
+                                        onTextChanged: {
+                                            var thisId = Number(objectName.split("_")[1])
+                                            if(thisId !== NaN){
+                                                contentList[thisId] = text
+                                                saveAll()
                                             }
                                         }
                                     }
@@ -278,6 +272,7 @@ Item {
                                         y: parent.height - 40
                                         width: 32
                                         height: 32
+                                        font.bold: true
                                         text: "X"
 
                                         contentItem: Text {
@@ -290,7 +285,7 @@ Item {
 
                                         background: Rectangle{
                                             radius: 4
-                                            color: parent.pressed ? "#191919" : (parent.hovered ? "#3F3F3F" : contentBackground)
+                                            color: parent.pressed ? "#191919" : (parent.hovered ? "#444" : contentBackground)
                                         }
 
                                         ToolTip.visible: hovered
@@ -306,25 +301,28 @@ Item {
                             }', swipeview)
 
                         var bar = Qt.createQmlObject('import QtQuick 2.5;import QtQuick.Controls 2.0;import QtQuick.Layouts 1.1;
-                                TabButton{
-                                    text: "' + text + '"
-                                    width: contentItem.implicitWidth + 21
-                                    height: tabBar.height
+                            TabButton{
+                                text: "' + text + '"
+                                width: contentItem.implicitWidth + 21
+                                height: tabBar.height
 
-                                    font.bold: true
+                                font.bold: true
 
-                                    contentItem: Text{
-                                        text: parent.text
-                                        font: parent.font
-                                        color: checked ? "#FFffffff" : "#77ffffff"
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
+                                contentItem: Text{
+                                    text: parent.text
+                                    font: parent.font
+                                    color: checked ? "#FFffffff" : "#77ffffff"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
 
-                                    background: Rectangle {
-                                        color: parent.checked ? contentBackgroundChecked : contentBackground
-                                    }
-                                }', tabBar)
+                                background: Rectangle {
+                                    color: parent.checked ? contentBackgroundChecked : contentBackground
+                                }
+                            }', tabBar)
+
+                        item.children[0].children[0].objectName = "TE_" + tabList.length
+                        console.log("Verildi: " , item.children[0].children[0].objectName)
 
                         tabBar.moveItem(tabBar.count-1, tabBar.count-2)
                         swipeview.moveItem(swipeview.count-1, swipeview.count-2)
@@ -350,21 +348,31 @@ Item {
     function deleteTab(index){
         swipeview.removeItem(index)
         tabBar.removeItem(index)
-        tabList.splice(index, 1)
-        contentList.splice(index, 1)
 
-        if(tabBar.count > 1 && tabBar.currentIndex < tabBar.count-1)
-            tabBar.incrementCurrentIndex()
+        tabList.splice(index,1)
+        contentList.splice(index,1)
+
+        for(var i=0; i < tabList.length; i++){
+            console.log(swipeview.itemAt(i).children[0].children[0].objectName)
+            swipeview.itemAt(i).children[0].children[0].objectName = "TE_"+i;
+            console.log("N:",swipeview.itemAt(i).children[0].children[0].objectName)
+        }
+
+        //if(tabBar.count > 0 && tabBar.currentIndex < tabBar.count-1)
+        //    tabBar.incrementCurrentIndex()
 
         saveAll()
+        console.log("Saved")
     }
 
     function saveAll(){
         var totalString = ""
-        for(var i in tabList)
+        for(var i=0; i < tabList.length; i++)
             totalString += tabList[i] + "_%_" + contentList[i] + "_&_"
 
-        totalString = totalString.slice(0, -3)
+        if(totalString.length >= 3)
+            totalString = totalString.slice(0, -3)
+
         wFile.saveFile(widgetName, "notes.txt", totalString);
     }
 

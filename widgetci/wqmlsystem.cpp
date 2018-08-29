@@ -73,7 +73,7 @@ QList<int> wqmlsystem::getCPUCoresUsages() const{
     return cpu_cores;
 #endif
 #ifdef Q_OS_WIN
-    return;
+    return QList<int>();
 #endif
 }
 
@@ -133,7 +133,7 @@ QList<int> wqmlsystem::getCPUCurrentClockSpeeds() const{
     return coreClocks;
 #endif
 #ifdef Q_OS_WIN
-    return;
+    return QList<int>();
 #endif
 }
 
