@@ -322,7 +322,6 @@ Item {
                             }', tabBar)
 
                         item.children[0].children[0].objectName = "TE_" + tabList.length
-                        console.log("Verildi: " , item.children[0].children[0].objectName)
 
                         tabBar.moveItem(tabBar.count-1, tabBar.count-2)
                         swipeview.moveItem(swipeview.count-1, swipeview.count-2)
@@ -353,16 +352,13 @@ Item {
         contentList.splice(index,1)
 
         for(var i=0; i < tabList.length; i++){
-            console.log(swipeview.itemAt(i).children[0].children[0].objectName)
             swipeview.itemAt(i).children[0].children[0].objectName = "TE_"+i;
-            console.log("N:",swipeview.itemAt(i).children[0].children[0].objectName)
         }
 
         //if(tabBar.count > 0 && tabBar.currentIndex < tabBar.count-1)
         //    tabBar.incrementCurrentIndex()
 
         saveAll()
-        console.log("Saved")
     }
 
     function saveAll(){
